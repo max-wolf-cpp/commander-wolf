@@ -1,0 +1,414 @@
+{
+  "version": 5,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 24,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "BaseConfig",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/Build/${presetName}",
+      "installDir": "${sourceDir}/Dist/${presetName}",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo",
+        "BUILD_TESTING": true,
+        "VCPKG_MANIFEST_FEATURES": "tests",
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/Ports",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/Triplets"
+      }
+    },
+    {
+      "name": "BaseWindows",
+      "inherits": "BaseConfig",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "/DUNICODE /D_UNICODE /EHsc",
+        "CMAKE_C_FLAGS": "/DUNICODE /D_UNICODE"
+      }
+    },
+    {
+      "name": "BaseMSVC",
+      "inherits": "BaseWindows",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows-vs2022"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [
+            "Windows"
+          ],
+          "intelliSenseMode": "windows-msvc-x64"
+        }
+      }
+    },
+    {
+      "name": "BaseClangCL",
+      "inherits": "BaseWindows",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "clang-cl.exe",
+        "CMAKE_RC_COMPILER": "rc.exe"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [
+            "Windows"
+          ],
+          "intelliSenseMode": "windows-clang-x64"
+        }
+      }
+    },
+    {
+      "name": "BaseAppleClang",
+      "inherits": "BaseConfig",
+      "hidden": true,
+      "generator": "Xcode",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "BaseClangLinux",
+      "inherits": "BaseConfig",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "VCPKG_TARGET_TRIPLET": "x64-linux"
+      }
+    },
+    {
+      "name": "MSVC",
+      "inherits": "BaseMSVC",
+      "displayName": "MSVC",
+      "description": "Configure for MSVC"
+    },
+    {
+      "name": "ClangCL",
+      "inherits": "BaseClangCL",
+      "displayName": "Clang-CL",
+      "description": "Configure for Clang-CL"
+    },
+    {
+      "name": "AppleClang",
+      "inherits": "BaseAppleClang",
+      "displayName": "Apple Clang",
+      "description": "Configure for Apple Clang"
+    },
+    {
+      "name": "ClangLinux",
+      "inherits": "BaseClangLinux",
+      "displayName": "Clang Linux",
+      "description": "Configure for native Linux with Clang"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "MSVC Debug",
+      "displayName": "MSVC x64 Debug",
+      "configurePreset": "MSVC",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "MSVC Release",
+      "displayName": "MSVC x64 Release",
+      "configurePreset": "MSVC",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "MSVC RelWithDebInfo",
+      "displayName": "MSVC x64 RelWithDebInfo",
+      "configurePreset": "MSVC",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Clang-CL Debug",
+      "displayName": "Clang-CL x64 Debug",
+      "configurePreset": "ClangCL",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Clang-CL Release",
+      "displayName": "Clang-CL x64 Release",
+      "configurePreset": "ClangCL",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Clang-CL RelWithDebInfo",
+      "displayName": "Clang-CL x64 RelWithDebInfo",
+      "configurePreset": "ClangCL",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Apple Clang Debug",
+      "displayName": "Apple Clang Debug",
+      "configurePreset": "AppleClang",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "Apple Clang Release",
+      "displayName": "Apple Clang Release",
+      "configurePreset": "AppleClang",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "Apple Clang RelWithDebInfo",
+      "displayName": "Apple Clang RelWithDebInfo",
+      "configurePreset": "AppleClang",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "Clang Linux Debug",
+      "displayName": "Clang Linux x64 Debug",
+      "configurePreset": "ClangLinux",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "Clang Linux Release",
+      "displayName": "Clang Linux x64 Release",
+      "configurePreset": "ClangLinux",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "Clang Linux RelWithDebInfo",
+      "displayName": "Clang Linux x64 RelWithDebInfo",
+      "configurePreset": "ClangLinux",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "BaseTests",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "MSVC Debug Tests",
+      "inherits": "BaseTests",
+      "displayName": "MSVC x64 Debug Tests",
+      "configurePreset": "MSVC",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "MSVC Release Tests",
+      "inherits": "BaseTests",
+      "displayName": "MSVC x64 Release Tests",
+      "configurePreset": "MSVC",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "MSVC RelWithDebInfo Tests",
+      "inherits": "BaseTests",
+      "displayName": "MSVC x64 RelWithDebInfo Tests",
+      "configurePreset": "MSVC",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Clang-CL Debug Tests",
+      "inherits": "BaseTests",
+      "displayName": "Clang-CL x64 Debug Tests",
+      "configurePreset": "ClangCL",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Clang-CL Release Tests",
+      "inherits": "BaseTests",
+      "displayName": "Clang-CL x64 Release Tests",
+      "configurePreset": "ClangCL",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Clang-CL RelWithDebInfo Tests",
+      "inherits": "BaseTests",
+      "displayName": "Clang-CL x64 RelWithDebInfo Tests",
+      "configurePreset": "ClangCL",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Apple Clang Debug Tests",
+      "inherits": "BaseTests",
+      "displayName": "Apple Clang Debug Tests",
+      "configurePreset": "AppleClang",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "Apple Clang Release Tests",
+      "inherits": "BaseTests",
+      "displayName": "Apple Clang Release Tests",
+      "configurePreset": "AppleClang",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "Apple Clang RelWithDebInfo Tests",
+      "inherits": "BaseTests",
+      "displayName": "Apple Clang RelWithDebInfo Tests",
+      "configurePreset": "AppleClang",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "Clang Linux Debug Tests",
+      "inherits": "BaseTests",
+      "displayName": "Clang Linux x64 Debug Tests",
+      "configurePreset": "ClangLinux",
+      "configuration": "Debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "Clang Linux Release Tests",
+      "inherits": "BaseTests",
+      "displayName": "Clang Linux x64 Release Tests",
+      "configurePreset": "ClangLinux",
+      "configuration": "Release",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "Clang Linux RelWithDebInfo Tests",
+      "inherits": "BaseTests",
+      "displayName": "Clang Linux x64 RelWithDebInfo Tests",
+      "configurePreset": "ClangLinux",
+      "configuration": "RelWithDebInfo",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "fox-media-term",
+  "version-string": "0.1.0",
+  "dependencies": [
+    {
+      "name": "ffmpeg",
+      "default-features": false,
+      "features": [
+        "avcodec",
+        "avformat",
+        "swresample",
+        "swscale"
+      ]
+    },
+    "libsixel",
+    "miniaudio",
+    "stb"
+  ],
+  "features": {
+    "tests": {
+      "description": "Build the Fox Media Term native tests",
+      "dependencies": [
+        "gtest"
+      ]
+    }
+  }
+}

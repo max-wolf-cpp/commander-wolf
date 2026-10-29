@@ -1,0 +1,11 @@
+[package]
+name = "fox-media-term"
+version = "0.1.0"
+edition = "2024"
+publish = false
+links = "fox_media_term"
+build = "build.rs"
+
+[lib]
+name = "fox_media_term"
+path = "src/lib.rs"

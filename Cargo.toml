@@ -1,0 +1,47 @@
+[package]
+name = "commander-wolf"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "A dual-pane terminal file manager with Vim-style navigation, Lua configuration, and rich previews"
+license = "MIT"
+repository = "https://github.com/max-wolf-cpp/commander-wolf"
+
+[workspace]
+members = [
+    "FoxMediaTerm/Bindings/Rust",
+]
+resolver = "3"
+
+[lib]
+name = "commander_wolf"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cwolf"
+path = "src/main.rs"
+
+[dependencies]
+arboard = { version = "3.6.1", default-features = false, features = ["wayland-data-control"] }
+crossterm = "0.29.0"
+djvu-rs = { version = "0.30.1", default-features = false, features = ["std"] }
+ebook-rs = { version = "0.16.4", default-features = false }
+fox-media-term = { path = "FoxMediaTerm/Bindings/Rust" }
+hayro = "0.7.1"
+image = { version = "0.25.10", default-features = false, features = ["bmp", "gif", "jpeg", "png", "tiff", "webp"] }
+mlua = { version = "0.11.6", features = ["lua55", "vendored"] }
+notify = "8.2.0"
+open = { version = "5.4.2", default-features = false }
+ratatui = { version = "0.30.2", default-features = false, features = ["crossterm", "unstable-rendered-line-info"] }
+sevenz-rust2 = { version = "0.22.2", default-features = false }
+syntect = { version = "5.3.0", default-features = false, features = ["default-syntaxes", "regex-fancy"] }
+tar = { version = "0.4.46", default-features = false }
+unicode-segmentation = "1.13.3"
+unicode-width = "0.2.2"
+zip = { version = "8.6.0", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.189"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Console", "Win32_System_JobObjects", "Win32_System_Threading", "Win32_System_Diagnostics_ToolHelp"] }

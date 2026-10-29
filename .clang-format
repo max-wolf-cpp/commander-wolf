@@ -1,0 +1,77 @@
+# Max Wolf's C++ Code Style settings
+---
+# Base
+Language: Cpp
+BasedOnStyle: Microsoft
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 120
+InsertNewlineAtEOF: true
+
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+    - Regex: '^<[a-z_]+>$'
+      Priority: 1
+    - Regex: '^<.*>$'
+      Priority: 2
+    - Regex: '^".*"$'
+      Priority: 3
+    - Regex: '.*'
+      Priority: 4
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterCaseLabel: true
+    BeforeWhile: true
+
+PointerAlignment: Left
+BreakBeforeBinaryOperators: NonAssignment
+
+# Constructor initializers
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: Never
+ConstructorInitializerIndentWidth: 4
+
+# Namespaces
+NamespaceIndentation: All
+AllowShortNamespacesOnASingleLine: false
+FixNamespaceComments: true
+
+# Function parameters
+BreakAfterReturnType: Automatic
+PenaltyReturnTypeOnItsOwnLine: 1000000
+
+BinPackParameters: OnePerLine
+AllowAllParametersOfDeclarationOnNextLine: false
+
+BinPackArguments: false
+AllowAllArgumentsOnNextLine: false
+
+BreakAfterOpenBracketFunction: true
+BreakBeforeCloseBracketFunction: true
+ContinuationIndentWidth: 4
+PenaltyBreakOpenParenthesis: 0
+
+# Switch
+IndentCaseLabels: true
+IndentCaseBlocks: false
+AllowShortCaseLabelsOnASingleLine: false
+
+# Braced init lists
+Cpp11BracedListStyle: Block
+BreakAfterOpenBracketBracedList: true
+BreakBeforeCloseBracketBracedList: true
+BinPackLongBracedList: false
+BracedInitializerIndentWidth: 4
+SpaceBeforeCpp11BracedList: true
+SpaceInEmptyBraces: Always
+
+# JNI-макросы: без этого clang-format не понимает сигнатуру и переносит
+# возвращаемый тип на отдельную строку вместо параметров.
+AttributeMacros:
+    - JNIEXPORT
+    - JNICALL
+...

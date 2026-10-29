@@ -1,0 +1,32 @@
+# CMake build and install output
+/Build/
+/Dist/
+/FoxMediaTerm/Build/
+/FoxMediaTerm/Dist/
+/FoxMediaTerm/compile_commands.json
+/CMakeUserPresets.json
+/FoxMediaTerm/CMakeUserPresets.json
+/FoxMediaTerm/vcpkg_installed/
+/target/
+
+# CMake files from accidental in-source builds
+/CMakeCache.txt
+/CMakeFiles/
+/CTestTestfile.cmake
+/cmake_install.cmake
+/compile_commands.json
+/Testing/
+
+# IDE and editor state
+.cache/
+/.idea/
+/.vs/
+/.vscode/
+*.suo
+*.user
+*.VC.db
+*.VC.VC.opendb
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
