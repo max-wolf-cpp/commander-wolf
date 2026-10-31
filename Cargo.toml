@@ -3,6 +3,7 @@ name = "commander-wolf"
 version = "0.1.0"
 edition = "2024"
 publish = false
+build = "build.rs"
 description = "A dual-pane terminal file manager with Vim-style navigation, Lua configuration, and rich previews"
 license = "MIT"
 repository = "https://github.com/max-wolf-cpp/commander-wolf"

@@ -27,3 +27,7 @@ These dependencies are downloaded by the build tools rather than copied into thi
 Include `LICENSE`, this notice, the vendored data license, and the applicable notices for the actual dependency versions included in a binary package. Rust dependencies compiled into the executable and native dependencies compiled into or shipped alongside Fox Media Term retain their respective license terms.
 
 FFmpeg's license and redistribution requirements depend on its enabled build configuration; refer to its [licensing information](https://ffmpeg.org/legal.html) and the actual vcpkg build configuration. The project's MIT license does not relicense FFmpeg or other third-party libraries.
+
+## Generated release packages
+
+The release packager collects the installed native notices and Rust crate notice files into `Licenses/`. `Licenses/Rust/dependencies.json` records the resolved crates, license expressions, authors, source references, and collected files. Crates with no recognized distributed notice file are reported for review before publication. The inventory is a record of the build, not a replacement for the original licenses. See [Release builds](docs/releases.md) for packaging and review steps.

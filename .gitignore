@@ -30,3 +30,7 @@
 # Operating system metadata
 .DS_Store
 Thumbs.db
+
+# Python packaging helpers
+__pycache__/
+*.py[cod]

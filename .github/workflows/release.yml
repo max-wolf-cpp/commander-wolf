@@ -1,0 +1,288 @@
+name: Build release archives
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag matching Cargo.toml (for example v0.1.0)'
+        required: true
+        default: v0.1.0
+        type: string
+      create_draft:
+        description: Create or update a draft release after all platforms pass
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  RUSTUP_TOOLCHAIN: '1.99.1'
+  CARGO_TERM_COLOR: always
+  CARGO_BUILD_JOBS: '2'
+  CMAKE_BUILD_PARALLEL_LEVEL: '3'
+  VCPKG_MAX_CONCURRENCY: '3'
+  VCPKG_DISABLE_METRICS: '1'
+
+jobs:
+  prepare:
+    # A dispatch in a private repository skips every job before a runner starts.
+    if: ${{ github.event.repository.visibility == 'public' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate release version and existing tag
+        id: version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import tomllib
+
+          version = tomllib.loads(Path('Cargo.toml').read_text())['package']['version']
+          tag = os.environ['RELEASE_TAG']
+          if not re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?', tag) or tag != 'v' + version:
+              raise SystemExit('The release tag must equal v followed by the Cargo package version')
+          existing = subprocess.run(['git', 'rev-parse', '--verify', 'refs/tags/' + tag + '^{}'], capture_output=True, text=True)
+          if existing.returncode == 0 and existing.stdout.strip() != os.environ['GITHUB_SHA']:
+              raise SystemExit('The existing tag points to another commit; select its commit or use a new version')
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write('version=' + version + '\n')
+          PY
+
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: windows-x64
+            runner: windows-2022
+            target: x86_64-pc-windows-msvc
+            preset: ClangCL
+            native_build: Clang-CL Debug
+            native_test: Clang-CL Debug Tests
+            python: python
+          - label: linux-x64
+            runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            preset: ClangLinux
+            native_build: Clang Linux Debug
+            native_test: Clang Linux Debug Tests
+            python: python3
+          - label: macos-arm64
+            runner: macos-15
+            target: aarch64-apple-darwin
+            preset: AppleClang
+            native_build: Apple Clang Debug
+            native_test: Apple Clang Debug Tests
+            python: python3
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Initialize Windows compiler and SDK environment
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./Packaging/SetupWindows.ps1
+
+      - name: Install Linux native build prerequisites
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor > "$RUNNER_TEMP/llvm-keyring.gpg"
+          sudo install -m 644 "$RUNNER_TEMP/llvm-keyring.gpg" /usr/share/keyrings/llvm-keyring.gpg
+          echo 'deb [signed-by=/usr/share/keyrings/llvm-keyring.gpg] https://apt.llvm.org/noble/ llvm-toolchain-noble-20 main' | sudo tee /etc/apt/sources.list.d/llvm-20.list
+          sudo apt-get update
+          sudo apt-get install -y clang-20 build-essential ninja-build pkg-config autoconf autoconf-archive automake libtool nasm
+          mkdir -p "$RUNNER_TEMP/cwolf-llvm/bin"
+          ln -s "$(command -v clang-20)" "$RUNNER_TEMP/cwolf-llvm/bin/clang"
+          ln -s "$(command -v clang++-20)" "$RUNNER_TEMP/cwolf-llvm/bin/clang++"
+          echo "$RUNNER_TEMP/cwolf-llvm/bin" >> "$GITHUB_PATH"
+          echo 'CC=clang-20' >> "$GITHUB_ENV"
+          echo 'CXX=clang++-20' >> "$GITHUB_ENV"
+
+      - name: Select macOS deployment target
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          echo 'MACOSX_DEPLOYMENT_TARGET=14.0' >> "$GITHUB_ENV"
+          xcodebuild -version
+
+      - name: Install the Rust toolchain
+        shell: pwsh
+        run: |
+          rustup toolchain install $env:RUSTUP_TOOLCHAIN --profile minimal --component rustfmt --component clippy
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $taskHost = rustc -vV | Select-String '^host: '
+          if ($taskHost.ToString().Trim() -ne 'host: ${{ matrix.target }}') { throw 'The Rust host does not match the native release target.' }
+
+      - name: Restore Rust download cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: rust-downloads-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('Cargo.lock') }}
+
+      - name: Restore vcpkg binary cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/cwolf-vcpkg-cache
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('FoxMediaTerm/vcpkg*.json', 'FoxMediaTerm/Ports/**', 'FoxMediaTerm/Triplets/**', '.github/workflows/release.yml') }}
+
+      - name: Bootstrap the pinned vcpkg checkout
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $taskRevision = (Get-Content FoxMediaTerm/vcpkg-configuration.json -Raw | ConvertFrom-Json).'default-registry'.baseline
+          $taskRoot = Join-Path $env:RUNNER_TEMP 'cwolf-vcpkg'
+          $taskCache = Join-Path $env:RUNNER_TEMP 'cwolf-vcpkg-cache'
+          New-Item -ItemType Directory -Path $taskRoot,$taskCache -Force | Out-Null
+          git -C $taskRoot init
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git -C $taskRoot remote add origin https://github.com/microsoft/vcpkg.git
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git -C $taskRoot fetch --depth 1 origin $taskRevision
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git -C $taskRoot checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($IsWindows) {
+            & (Join-Path $taskRoot 'bootstrap-vcpkg.bat') -disableMetrics
+          } else {
+            & bash (Join-Path $taskRoot 'bootstrap-vcpkg.sh') -disableMetrics
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "VCPKG_ROOT=$taskRoot" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "VCPKG_BINARY_SOURCES=clear;files,$taskCache,readwrite" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          'FOX_MEDIA_TERM_CMAKE_PRESET=${{ matrix.preset }}' | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Check Rust formatting
+        shell: pwsh
+        run: |
+          cargo fmt --all --check
+          exit $LASTEXITCODE
+
+      - name: Run Rust and binding tests
+        shell: pwsh
+        run: |
+          cargo test --workspace --locked
+          exit $LASTEXITCODE
+
+      - name: Run Clippy
+        shell: pwsh
+        run: |
+          cargo clippy --workspace --all-targets --locked -- -D warnings
+          exit $LASTEXITCODE
+
+      - name: Run standalone native tests
+        shell: pwsh
+        working-directory: FoxMediaTerm
+        run: |
+          cmake --preset '${{ matrix.preset }}'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build --preset '${{ matrix.native_build }}'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ctest --preset '${{ matrix.native_test }}'
+          exit $LASTEXITCODE
+
+      - name: Build the release and record dependency metadata
+        shell: pwsh
+        run: |
+          cargo build --release --locked --bin cwolf --message-format=json-render-diagnostics > (Join-Path $env:RUNNER_TEMP 'cwolf-build.jsonl')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo metadata --locked --filter-platform '${{ matrix.target }}' --format-version 1 > (Join-Path $env:RUNNER_TEMP 'cwolf-metadata.json')
+          exit $LASTEXITCODE
+
+      - name: Package and verify the extracted archive
+        shell: pwsh
+        run: |
+          & '${{ matrix.python }}' Packaging/package_release.py --build-log (Join-Path $env:RUNNER_TEMP 'cwolf-build.jsonl') --cargo-metadata (Join-Path $env:RUNNER_TEMP 'cwolf-metadata.json')
+          exit $LASTEXITCODE
+
+      - name: Upload verified archives
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ matrix.label }}
+          path: Dist/Releases/*
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+          overwrite: true
+
+  draft:
+    needs: [prepare, build]
+    if: ${{ inputs.create_draft }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: release-*
+          path: Dist/Releases
+          merge-multiple: true
+      - name: Verify archive checksums and combine them
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd Dist/Releases
+          test "$(find . -maxdepth 1 -name '*.sha256' | wc -l)" -eq 3
+          cat ./*.sha256 > SHA256SUMS.txt
+          sha256sum --check SHA256SUMS.txt
+      - name: Create or update the draft release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $taskNotes = Join-Path $env:RUNNER_TEMP 'release-notes.md'
+          @"
+          Commander Wolf $env:RELEASE_VERSION
+
+          Built from commit $env:GITHUB_SHA.
+          Extract the complete archive for your platform and keep cwolf with its libraries.
+          Windows/Linux: x64. macOS: Apple Silicon, macOS 14 or newer.
+          Linux: glibc 2.39 or newer and a compatible libstdc++ runtime.
+
+          Automated tests and archive loader checks passed. Manual terminal/media testing and dependency-notice review remain before publication.
+          "@ | Set-Content -Path $taskNotes -Encoding utf8
+          $taskReleaseArguments = @($env:RELEASE_TAG, '--repo', $env:GITHUB_REPOSITORY, '--target', $env:GITHUB_SHA, '--title', "Commander Wolf $env:RELEASE_VERSION", '--notes-file', $taskNotes, '--draft')
+          $taskExisting = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json isDraft 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            if (-not ($taskExisting | ConvertFrom-Json).isDraft) { throw 'Refusing to replace files of a published release.' }
+            gh release edit @taskReleaseArguments
+          } else {
+            gh release create @taskReleaseArguments
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $taskAssets = @(Get-ChildItem Dist/Releases -File | Where-Object { $_.Name -match '\.(zip|tar\.gz)$' -or $_.Name -eq 'SHA256SUMS.txt' } | ForEach-Object FullName)
+          gh release upload $env:RELEASE_TAG @taskAssets --repo $env:GITHUB_REPOSITORY --clobber
+          exit $LASTEXITCODE

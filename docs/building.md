@@ -9,7 +9,7 @@ Commander Wolf is a Cargo workspace containing the Rust application and the safe
 - A current stable Rust toolchain, including Cargo and support for Rust 2024.
 - Git and CMake 3.24 or newer on `PATH`.
 - A bootstrapped [vcpkg](https://github.com/microsoft/vcpkg) checkout, with `VCPKG_ROOT` pointing to its root.
-- A C++23 compiler and matching standard library, including `std::expected`.
+- A C++23 compiler and matching standard library, including `std::expected`. Clang with libstdc++ requires Clang 19 or newer; CMake checks this capability before building.
 - Network access on the first build for Cargo, vcpkg, and CMake downloads.
 
 Use your platform's package manager or official installers for the native toolchain. vcpkg's [host requirements](https://learn.microsoft.com/en-us/vcpkg/concepts/supported-hosts) list the platform utilities needed by its ports.
@@ -48,7 +48,7 @@ For another installed toolchain, make machine-specific adjustments in `FoxMediaT
 
 ## Linux
 
-The supplied `ClangLinux` preset targets x64 Linux and uses Ninja Multi-Config. Install Clang/Clang++, a C++23-capable standard library, Ninja, CMake, and normal native build tools. vcpkg also needs Git, curl, tar, zip, unzip, and pkg-config; some ports use make, autoconf, automake, and libtool.
+The supplied `ClangLinux` preset targets x64 Linux and uses Ninja Multi-Config. Install Clang 19 or newer with a compatible libstdc++ (or another C++23-capable standard library), Ninja, CMake, and normal native build tools. The preset resolves `clang` and `clang++` from `PATH`; make sure these names select the intended compiler. vcpkg also needs Git, curl, tar, zip, unzip, and pkg-config; some ports use make, autoconf, automake, and libtool.
 
 Bootstrap vcpkg outside the project if needed:
 
@@ -106,11 +106,11 @@ Cargo uses native `Debug` for its dev/test profile and native `Release` for its 
 
 The executable is `cwolf` (`cwolf.exe` on Windows). Cargo stages the Fox Media Term shared library beside executables and test binaries. On Windows, the native install step also gathers its app-local runtime DLL dependencies, so the executable is accompanied by `fox_media_term.dll`, FFmpeg DLLs, and any needed runtime DLLs.
 
-Keep these files together when moving or packaging a build. Embedded Lua defaults and vendored icon tables do not need to be shipped as separate data files. A user `init.lua` remains optional and lives in the per-user configuration directory.
+Optimized Windows installs also collect redistributable compiler runtime libraries through CMake. Non-system native dependencies are installed on Linux and macOS as well; unresolved dependencies fail installation. Keep these files together when moving or packaging a build. Embedded Lua defaults and vendored icon tables do not need to be shipped as separate data files. A user `init.lua` remains optional and lives in the per-user configuration directory.
 
-Linux and macOS builds use an executable-relative library search path for the staged Fox Media Term library. Its other native dependencies may still be resolved through system or build-time locations: inspect them with `ldd` (Linux) or `otool -L` (macOS) before distributing binaries to another machine. Building locally does not by itself create a portable archive.
+The application build script sets an executable-relative library search path on Linux and macOS; a dependency build script cannot set linker arguments for the final executable. The standalone library retains its own relative runtime path. Before distribution, use the [release packager](releases.md), which collects licenses, rewrites macOS load commands, verifies compiler/runtime dependencies, and checks startup from an extracted archive. Building locally does not by itself create a verified release archive.
 
-Binary packages must retain the project's license and the applicable notices for the actual dependencies shipped; see [Third-party notices](../THIRD_PARTY_NOTICES.md).
+CMake installs vcpkg copyright files and pinned PNG encoder notices under `share/fox_media_term/licenses`. Binary packages must retain the project's license and the applicable notices for the actual dependencies shipped; see [Third-party notices](../THIRD_PARTY_NOTICES.md).
 
 ## Rust checks
 

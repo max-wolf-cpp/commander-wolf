@@ -10,6 +10,13 @@ const PRESET_ENVIRONMENT: &str = "FOX_MEDIA_TERM_CMAKE_PRESET";
 const CONFIGURATION_ENVIRONMENT: &str = "FOX_MEDIA_TERM_CMAKE_CONFIG";
 
 fn main() {
+    let host = required_environment("HOST");
+    let target = required_environment("TARGET");
+    assert_eq!(
+        host, target,
+        "Fox Media Term requires a native build; run Cargo on the target platform instead of cross-compiling"
+    );
+
     let manifest_directory = PathBuf::from(required_environment("CARGO_MANIFEST_DIR"));
     let project_directory = manifest_directory.join("../..");
     let output_directory = PathBuf::from(required_environment("OUT_DIR"));
@@ -57,6 +64,7 @@ fn main() {
     );
     println!("cargo:rustc-link-lib=dylib=fox_media_term");
 
+    // These arguments cover this crate's tests; applications set their own rpath.
     if cfg!(target_os = "linux") {
         println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN");
     } else if cfg!(target_os = "macos") {

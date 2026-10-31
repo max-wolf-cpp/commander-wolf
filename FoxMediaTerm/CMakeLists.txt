@@ -10,6 +10,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+include(CheckCXXSourceCompiles)
+check_cxx_source_compiles(
+    "#include <expected>
+    int main() { std::expected<int, int> value(42); return value.value() == 42 ? 0 : 1; }"
+    FOX_MEDIA_TERM_HAS_STD_EXPECTED
+)
+if(NOT FOX_MEDIA_TERM_HAS_STD_EXPECTED)
+    message(FATAL_ERROR
+        "Fox Media Term requires a C++23 compiler and standard library with std::expected. "
+        "For Clang with libstdc++, use Clang 19 or newer and a compatible standard library."
+    )
+endif()
+
 if(MSVC OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
     set(FOX_MEDIA_TERM_OPTIMIZATION_FLAG "/O2")
     add_compile_options("$<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:/O2>")
@@ -205,6 +218,21 @@ set_target_properties(
 
 include(CMake/CopyRuntimeDependencies.cmake)
 FoxMediaTermInstallWithRuntimeDependencies(FoxMediaTerm)
+
+configure_file(CMake/BuildInfo.json.in "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.json.in" @ONLY)
+file(
+    GENERATE
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo-$<CONFIG>.json"
+    INPUT "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.json.in"
+)
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo-$<CONFIG>.json"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/fox_media_term"
+    RENAME BuildInfo.json
+)
+
+include(CMake/InstallLicenses.cmake)
+FoxMediaTermInstallLicenses()
 
 install(
     FILES Include/FoxMediaTerm/FoxMediaTerm.h

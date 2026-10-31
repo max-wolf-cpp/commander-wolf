@@ -8,7 +8,7 @@ A dual-pane terminal file manager with Vim-style navigation, Lua configuration, 
 
 Commander Wolf is written in Rust with Ratatui. Its native media engine, **Fox Media Term**, is a separate C++23 library included in this repository and built automatically by Cargo.
 
-[Build instructions](docs/building.md) · [User guide](docs/user-guide.md) · [Architecture](docs/architecture.md) · [MIT license](LICENSE)
+[Build instructions](docs/building.md) · [User guide](docs/user-guide.md) · [Architecture](docs/architecture.md) · [Release builds](docs/releases.md) · [MIT license](LICENSE)
 
 ## Features
 
@@ -55,7 +55,7 @@ Build prerequisites:
 | Rust | Current stable Rust with Cargo and Rust 2024 edition support |
 | Native build | CMake 3.24+, Git, and a bootstrapped vcpkg checkout |
 | Windows | Clang-CL, Ninja, MSVC C++ build tools, and the Windows SDK; use an x64 Visual Studio developer shell |
-| Linux | Clang/Clang++, a C++23-capable standard library, Ninja, and standard native build tools |
+| Linux | Clang 19+ with a compatible libstdc++ (or another C++23-capable standard library), Ninja, and native build tools |
 | macOS | Full Xcode with AppleClang and a C++23-capable standard library |
 
 Set `VCPKG_ROOT` to your vcpkg checkout, then run:
@@ -71,7 +71,7 @@ The resulting executable is `target/release/cwolf.exe` on Windows or `target/rel
 
 Cargo builds Fox Media Term through CMake, installs it into Cargo's build output, and stages its shared library beside the executables. On Windows it also stages app-local native dependencies. **There is no separate manual media-library build step.** The first build downloads and compiles dependencies and can take a while.
 
-See [Building and testing](docs/building.md) for platform setup, vcpkg bootstrap commands, native dependencies, runtime libraries, native tests, and common build failures.
+See [Building and testing](docs/building.md) for platform setup, vcpkg bootstrap commands, native dependencies, runtime libraries, native tests, and common build failures. [Release builds](docs/releases.md) covers local Windows packaging and the manually dispatched GitHub Actions matrix, which only runs in a public repository and prepares draft releases.
 
 ## Essential controls
 
