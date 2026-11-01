@@ -182,10 +182,10 @@ impl TerminalWriter {
         }
 
         #[cfg(windows)]
-        if let Some(original) = self.native_mouse_mode {
-            if restore_console_mouse_input(original).is_ok() {
-                self.native_mouse_mode = None;
-            }
+        if let Some(original) = self.native_mouse_mode
+            && restore_console_mouse_input(original).is_ok()
+        {
+            self.native_mouse_mode = None;
         }
     }
 }

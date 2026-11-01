@@ -59,8 +59,10 @@ fn cbz_natural_order_pixel_content_source_limits_and_no_disk_extraction() {
                 .raster
                 .unwrap()
                 .pixels
-                .chunks_exact(4)
-                .all(|pixel| pixel == [red, 0, 0, 255])
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .all(|pixel| *pixel == [red, 0, 0, 255])
         );
     }
     assert_eq!(fs::read_dir(&temp.0).unwrap().count(), 1);

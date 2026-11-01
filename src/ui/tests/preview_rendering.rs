@@ -191,15 +191,15 @@ fn rich_preview_protects_only_the_media_region() {
     );
     assert_eq!(
         buffer[(preview.metadata.x, preview.metadata.y)].bg,
-        theme.preview_background.into()
+        theme.preview_background
     );
     assert_eq!(
         buffer[(preview.metadata.x + 1, preview.metadata.y)].fg,
-        theme.preview_metadata_label.into()
+        theme.preview_metadata_label
     );
     assert_eq!(
         buffer[(preview.metadata.x + 14, preview.metadata.y)].fg,
-        theme.preview_metadata_value.into()
+        theme.preview_metadata_value
     );
     assert!(buffer.content().iter().any(|cell| cell.symbol() == "M"));
     for area in [preview.separator, preview.metadata] {
@@ -376,7 +376,7 @@ fn text_preview_is_drawn_by_ratatui_without_protecting_the_region() {
     );
     assert_eq!(
         buffer[(layout.media.x, layout.media.y)].bg,
-        theme.preview_background.into()
+        theme.preview_background
     );
 }
 
@@ -510,6 +510,6 @@ fn loading_a_new_preview_clears_the_previous_fallback_before_media_is_written() 
     assert!(!buffer_text(buffer).contains("old fallback marker"));
     assert_eq!(
         buffer[(layout.media.x, layout.media.y)].bg,
-        theme.preview_background.into()
+        theme.preview_background
     );
 }

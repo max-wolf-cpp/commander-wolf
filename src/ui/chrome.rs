@@ -8,7 +8,6 @@ use ratatui::widgets::{Block, Paragraph};
 use unicode_segmentation::UnicodeSegmentation;
 use unicode_width::UnicodeWidthStr;
 
-use crate::icons::IconMode;
 use crate::theme::Theme;
 
 pub(super) fn draw_titled_block(
@@ -66,7 +65,6 @@ pub(super) fn draw_borderless_title(
     title_background: Color,
     panel_background: Style,
     theme: &Theme,
-    _icon_mode: IconMode,
     title_text_color: Color,
 ) {
     if area.is_empty() {
@@ -92,7 +90,7 @@ pub(super) fn draw_borderless_title(
 
     if left_width > 0 {
         frame.render_widget(
-            Paragraph::new(left_glyph).style(panel_background.fg(title_background.into())),
+            Paragraph::new(left_glyph).style(panel_background.fg(title_background)),
             Rect::new(area.x, area.y, left_width, 1),
         );
     }
@@ -105,9 +103,7 @@ pub(super) fn draw_borderless_title(
     if center_width > 0 {
         frame.render_widget(
             Paragraph::new(format!("  {title}")).style(bold_if(
-                Style::default()
-                    .fg(title_text_color.into())
-                    .bg(title_background.into()),
+                Style::default().fg(title_text_color).bg(title_background),
                 theme.title_bold,
             )),
             Rect::new(center_x, area.y, center_width, 1),
@@ -116,7 +112,7 @@ pub(super) fn draw_borderless_title(
 
     if right_width > 0 {
         frame.render_widget(
-            Paragraph::new(right_glyph).style(panel_background.fg(title_background.into())),
+            Paragraph::new(right_glyph).style(panel_background.fg(title_background)),
             Rect::new(
                 area.right().saturating_sub(right_width),
                 area.y,

@@ -15,20 +15,20 @@ pub fn visible_rows(area: Rect) -> usize {
 
 pub fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
     let area = super::finder::modal_area(frame.area());
-    let background = Style::default().bg(theme.float_background.into());
+    let background = Style::default().bg(theme.float_background);
     super::floating::clear(frame, area, theme.float_background);
     let block = Block::default()
         .style(background)
         .borders(Borders::ALL)
         .border_set(theme.border_set())
-        .border_style(Style::default().fg(theme.active_border.into()));
+        .border_style(Style::default().fg(theme.active_border));
     let title = format!("Directory Tree: {}", state.directory_tree.root.display());
     let inner = super::chrome::draw_titled_block(
         frame,
         area,
         block,
         &title,
-        Style::default().fg(theme.active_title.into()),
+        Style::default().fg(theme.active_title),
         background,
     );
     if inner.is_empty() {
@@ -66,9 +66,9 @@ pub fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
                     .unwrap_or("Empty directory"),
             )
             .style(background.fg(if state.directory_tree.error.is_some() {
-                theme.error.into()
+                theme.error
             } else {
-                theme.inactive_title.into()
+                theme.inactive_title
             })),
         );
     }
@@ -112,8 +112,7 @@ fn entry_item<'a>(
                 theme.hidden
             } else {
                 icon.themed_display_color(icon_kind, theme)
-            }
-            .into()),
+            }),
         ),
         Span::raw(icon.spacer()),
         Span::styled(
@@ -127,22 +126,19 @@ fn entry_item<'a>(
                     theme,
                     state.workspace.color_file_names,
                 )
-            }
-            .into()),
+            }),
         ),
     ];
     if selected && theme.selected_text != theme.text {
         for span in &mut spans {
-            span.style = span.style.fg(theme.selected_text.into());
+            span.style = span.style.fg(theme.selected_text);
         }
     }
 
     ListItem::new(Line::from(spans)).style(if selected {
-        Style::default()
-            .fg(theme.selected_text.into())
-            .bg(theme.selected.into())
+        Style::default().fg(theme.selected_text).bg(theme.selected)
     } else {
-        background.fg(theme.text.into())
+        background.fg(theme.text)
     })
 }
 
@@ -232,7 +228,7 @@ mod tests {
                 .iter()
                 .find(|cell| cell.symbol() == glyph)
                 .expect("folder glyph must be rendered");
-            assert_eq!(cell.fg, theme.directory.into());
+            assert_eq!(cell.fg, theme.directory);
         }
     }
 }

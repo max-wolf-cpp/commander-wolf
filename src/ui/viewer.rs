@@ -18,7 +18,7 @@ pub fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
     };
 
     super::floating::clear(frame, layout.modal, theme.float_background);
-    let background = Style::default().bg(theme.float_background.into());
+    let background = Style::default().bg(theme.float_background);
     super::chrome::draw_titled_block(
         frame,
         layout.modal,
@@ -26,10 +26,10 @@ pub fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
             .style(background)
             .borders(Borders::ALL)
             .border_set(theme.border_set())
-            .border_style(Style::default().fg(theme.active_border.into())),
+            .border_style(Style::default().fg(theme.active_border)),
         &state.viewer.title,
         Style::default()
-            .fg(theme.active_title.into())
+            .fg(theme.active_title)
             .add_modifier(if theme.title_bold {
                 Modifier::BOLD
             } else {
@@ -44,7 +44,7 @@ pub fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
         frame.render_widget(
             Paragraph::new(message.as_str())
                 .centered()
-                .style(background.fg(theme.preview_unavailable.into())),
+                .style(background.fg(theme.preview_unavailable)),
             layout.media,
         );
     }
@@ -68,17 +68,13 @@ fn draw_probe_status(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
     frame.render_widget(
         Paragraph::new("Preparing image…")
             .centered()
-            .style(
-                Style::default()
-                    .bg(theme.float_background.into())
-                    .fg(theme.text.into()),
-            )
+            .style(Style::default().bg(theme.float_background).fg(theme.text))
             .block(
                 Block::default()
                     .borders(Borders::ALL)
                     .border_set(theme.border_set())
                     .title(state.viewer.title.as_str())
-                    .border_style(Style::default().fg(theme.active_border.into())),
+                    .border_style(Style::default().fg(theme.active_border)),
             ),
         modal,
     );

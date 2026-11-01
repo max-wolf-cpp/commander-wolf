@@ -49,7 +49,7 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     let buffer = terminal.backend().buffer();
     assert_eq!(
         buffer[(layout.bottom_frame.x, layout.bottom_frame.y)].fg,
-        theme.mode_normal.into()
+        theme.mode_normal
     );
     assert_eq!(
         buffer[(layout.status_line.x, layout.status_line.y)].symbol(),
@@ -57,7 +57,7 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     );
     assert_eq!(
         buffer[(layout.status_line.x, layout.status_line.y)].fg,
-        theme.mode_normal.into()
+        theme.mode_normal
     );
     assert_eq!(
         buffer[(layout.command_line.right() - 2, layout.command_line.y)].symbol(),
@@ -83,11 +83,11 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     assert_eq!(buffer[(mode_x, layout.status_line.y)].symbol(), "C");
     assert_eq!(
         buffer[(mode_x, layout.status_line.y)].fg,
-        theme.mode_command.into()
+        theme.mode_command
     );
     assert_eq!(
         buffer[(layout.bottom_frame.x, layout.bottom_frame.y)].fg,
-        theme.mode_command.into()
+        theme.mode_command
     );
 
     theme.framed_footer_border_follows_mode = false;
@@ -101,7 +101,7 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     let buffer = terminal.backend().buffer();
     assert_eq!(
         buffer[(layout.bottom_frame.x, layout.bottom_frame.y)].fg,
-        theme.framed_footer_border.into()
+        theme.framed_footer_border
     );
 
     state.status_line_options.mode_position = ModePosition::Left;
@@ -128,7 +128,7 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     );
     assert_eq!(
         buffer[(compact.status_line.x, compact.status_line.y)].bg,
-        theme.mode_command.into()
+        theme.mode_command
     );
     assert_eq!(
         buffer[(compact.status_line.x + 1, compact.status_line.y)].symbol(),
@@ -140,7 +140,7 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     );
     assert_eq!(
         buffer[(compact.status_line.right() - 1, compact.status_line.y)].bg,
-        theme.compact_status_background.into()
+        theme.compact_status_background
     );
     assert_eq!(
         buffer[(compact.command_line.x, compact.command_line.y)].symbol(),
@@ -171,11 +171,11 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     );
     assert_eq!(
         buffer[(divided.status_line.x, divided.status_line.y)].fg,
-        theme.mode_command.into()
+        theme.mode_command
     );
     assert_eq!(
         buffer[(divided.status_line.x, divided.status_line.y)].bg,
-        theme.status_background.into()
+        theme.status_background
     );
     assert_eq!(
         buffer[(divided.bottom_separator.x, divided.bottom_separator.y)].symbol(),
@@ -187,7 +187,7 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     );
     assert_eq!(
         buffer[(divided.bottom_separator.x + 1, divided.bottom_separator.y)].fg,
-        theme.line_number.into()
+        theme.line_number
     );
     assert_eq!(
         buffer[(divided.command_line.x, divided.command_line.y)].symbol(),
@@ -218,7 +218,7 @@ fn status_and_command_lines_render_independently_with_padding_and_pending_keys()
     );
     assert_eq!(
         buffer[(separated.status_line.x, separated.status_line.y)].bg,
-        theme.mode_command.into()
+        theme.mode_command
     );
     assert_eq!(
         buffer[(separated.command_line.x, separated.command_line.y)].symbol(),

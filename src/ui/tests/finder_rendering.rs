@@ -100,6 +100,6 @@ fn finder_draws_results_input_and_existing_preview_with_static_titles() {
             finder_layout.preview.metadata.y
         )]
             .bg,
-        theme.float_background.into()
+        theme.float_background
     );
 }

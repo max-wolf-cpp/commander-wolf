@@ -112,17 +112,17 @@ fn draw_panel_gap(
     }
 
     frame.render_widget(
-        Block::default().style(Style::default().bg(theme.base.into())),
+        Block::default().style(Style::default().bg(theme.base)),
         layout.panel_gap,
     );
 
     if panel_style == PanelStyle::Compact && layout.panel_gap.height > 1 {
         frame.render_widget(
             Block::default()
-                .style(Style::default().bg(theme.base.into()))
+                .style(Style::default().bg(theme.base))
                 .borders(Borders::LEFT)
                 .border_set(theme.panel_border_set())
-                .border_style(Style::default().fg(theme.inactive_border.into())),
+                .border_style(Style::default().fg(theme.inactive_border)),
             ratatui::layout::Rect::new(
                 layout.panel_gap.x,
                 layout.panel_gap.y + 1,

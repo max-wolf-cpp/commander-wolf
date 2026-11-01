@@ -72,8 +72,10 @@ pub(super) fn decode_path(bytes: &[u8]) -> Result<PathBuf, String> {
     }
 
     let words = bytes
-        .chunks_exact(2)
-        .map(|chunk| u16::from_le_bytes([chunk[0], chunk[1]]))
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .map(|chunk| u16::from_le_bytes(*chunk))
         .collect::<Vec<_>>();
     if words.contains(&0) {
         return Err("null character in path".into());

@@ -40,8 +40,22 @@ fn loads_a_pure_rust_generated_multipage_djvu() {
     assert_eq!(output.preview.total_pages, 2);
     assert!(output.raster.is_some());
     let raster = output.raster.as_ref().unwrap();
-    assert!(raster.pixels.chunks_exact(4).any(|pixel| pixel[0] < 80));
-    assert!(raster.pixels.chunks_exact(4).any(|pixel| pixel[0] > 200));
+    assert!(
+        raster
+            .pixels
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .any(|pixel| pixel[0] < 80)
+    );
+    assert!(
+        raster
+            .pixels
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .any(|pixel| pixel[0] > 200)
+    );
 
     let _ = fs::remove_file(path);
 }

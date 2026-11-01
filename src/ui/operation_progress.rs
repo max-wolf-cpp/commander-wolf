@@ -189,7 +189,7 @@ fn draw_bar(frame: &mut Frame<'_>, area: Rect, done: u64, total: u64, theme: &Th
     }
 
     frame.render_widget(
-        Block::default().style(Style::default().bg(theme.selected.into())),
+        Block::default().style(Style::default().bg(theme.selected)),
         area,
     );
     let filled = if total == 0 {
@@ -198,7 +198,7 @@ fn draw_bar(frame: &mut Frame<'_>, area: Rect, done: u64, total: u64, theme: &Th
         (u128::from(done.min(total)) * u128::from(area.width) / u128::from(total)) as u16
     };
     frame.render_widget(
-        Block::default().style(Style::default().bg(theme.mode_command.into())),
+        Block::default().style(Style::default().bg(theme.mode_command)),
         Rect::new(area.x, area.y, filled, area.height),
     );
 }
@@ -242,7 +242,7 @@ mod tests {
                     assert!(text.contains("Current file: 25%"));
                     assert!(text.contains("Overall: 50%"));
                     assert!(text.contains("Cancel"));
-                    assert_eq!(buffer[(area.x, area.y)].fg, theme.mode_command.into());
+                    assert_eq!(buffer[(area.x, area.y)].fg, theme.mode_command);
                 }
             }
         }

@@ -98,16 +98,11 @@ pub(super) fn draw_input(
 
     let mut input_style = background.fg(background.fg.unwrap_or(theme.text));
     if prompt.selected_all {
-        input_style = input_style
-            .fg(theme.selected_text.into())
-            .bg(theme.selected.into());
+        input_style = input_style.fg(theme.selected_text).bg(theme.selected);
     }
 
     let mut spans = vec![
-        Span::styled(
-            prefix,
-            background.fg(theme.dialog_color(DialogKind::Info).into()),
-        ),
+        Span::styled(prefix, background.fg(theme.dialog_color(DialogKind::Info))),
         Span::styled(prompt.text.as_str(), input_style),
     ];
     if !prefix.is_empty()
@@ -115,7 +110,7 @@ pub(super) fn draw_input(
     {
         spans.push(Span::styled(
             format!("  {error}"),
-            background.fg(theme.error.into()),
+            background.fg(theme.error),
         ));
     }
     if !prefix.is_empty() {
@@ -206,12 +201,9 @@ mod tests {
             assert_eq!(buffer[(area.x + 2, area.y + 4)].symbol(), "旧");
             assert_eq!(
                 buffer[(area.x, area.y)].fg,
-                theme.dialog_color(DialogKind::Info).into()
+                theme.dialog_color(DialogKind::Info)
             );
-            assert_eq!(
-                buffer[(area.x + 1, area.y + 1)].bg,
-                theme.float_background.into()
-            );
+            assert_eq!(buffer[(area.x + 1, area.y + 1)].bg, theme.float_background);
             assert_eq!(
                 terminal.backend().cursor_position(),
                 (area.x + 10, area.y + 4).into()

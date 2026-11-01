@@ -12,10 +12,10 @@ pub(super) fn draw(frame: &mut Frame<'_>, layout: AppLayout, state: &AppState, t
         let mode = status_line::current_mode(state);
         frame.render_widget(
             Block::default()
-                .style(Style::default().bg(theme.status_background.into()))
+                .style(Style::default().bg(theme.status_background))
                 .borders(Borders::ALL)
                 .border_set(theme.footer_border_set())
-                .border_style(Style::default().fg(theme.framed_footer_border_color(mode).into())),
+                .border_style(Style::default().fg(theme.framed_footer_border_color(mode))),
             layout.bottom_frame,
         );
     }
@@ -41,8 +41,8 @@ pub(super) fn draw(frame: &mut Frame<'_>, layout: AppLayout, state: &AppState, t
         frame.render_widget(
             ratatui::widgets::Paragraph::new(separator).style(
                 Style::default()
-                    .fg(separator_color.into())
-                    .bg(theme.status_background.into()),
+                    .fg(separator_color)
+                    .bg(theme.status_background),
             ),
             layout.bottom_separator,
         );
@@ -53,7 +53,7 @@ pub(super) fn draw(frame: &mut Frame<'_>, layout: AppLayout, state: &AppState, t
 
     if !layout.bottom_spacer.is_empty() {
         frame.render_widget(
-            Block::default().style(Style::default().bg(theme.status_background.into())),
+            Block::default().style(Style::default().bg(theme.status_background)),
             layout.bottom_spacer,
         );
     }

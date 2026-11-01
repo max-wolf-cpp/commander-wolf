@@ -70,11 +70,11 @@ fn file_conflict_surfaces_operation_title_actions_and_accented_shortcuts() {
     let area = centered_dialog(Rect::new(0, 0, 80, 24), 76, &body, &actions);
     assert_eq!(
         terminal.backend().buffer()[(area.x, area.y)].fg,
-        theme.dialog_warning.into()
+        theme.dialog_warning
     );
     let title_cell = &terminal.backend().buffer()[(area.x + 5, area.y)];
     assert_eq!(title_cell.symbol(), "C");
-    assert_eq!(title_cell.fg, theme.dialog_warning.into());
+    assert_eq!(title_cell.fg, theme.dialog_warning);
     assert!(title_cell.modifier.contains(Modifier::BOLD));
     let inner_x = area.x + 1;
     let message_y = area.y + 1;
@@ -303,19 +303,19 @@ fn directory_edit_confirmation_lists_colored_changes_and_actions() {
     );
     assert_eq!(
         lines[0].spans[1].style.fg,
-        Some(theme.directory_edit_create.into())
+        Some(theme.directory_edit_create)
     );
     assert_eq!(
         lines[1].spans[1].style.fg,
-        Some(theme.directory_edit_rename.into())
+        Some(theme.directory_edit_rename)
     );
     assert_eq!(
         lines[2].spans[1].style.fg,
-        Some(theme.directory_edit_delete.into())
+        Some(theme.directory_edit_delete)
     );
     let accent = theme.dialog_color(state.dialog_kind);
     for span in [&lines[4].spans[1], &lines[4].spans[3], &lines[4].spans[5]] {
-        assert_eq!(span.style.fg, Some(accent.into()));
+        assert_eq!(span.style.fg, Some(accent));
         assert!(span.style.add_modifier.contains(Modifier::BOLD));
     }
 }
@@ -386,7 +386,7 @@ fn delete_confirmation_names_the_target_and_uses_warning_actions() {
         ]
     );
     for span in [&lines[3].spans[1], &lines[3].spans[3]] {
-        assert_eq!(span.style.fg, Some(theme.dialog_warning.into()));
+        assert_eq!(span.style.fg, Some(theme.dialog_warning));
         assert!(span.style.add_modifier.contains(Modifier::BOLD));
     }
 

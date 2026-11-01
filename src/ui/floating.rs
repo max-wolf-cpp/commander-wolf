@@ -8,7 +8,7 @@ use ratatui::style::Color;
 pub(super) fn clear(frame: &mut Frame<'_>, area: Rect, background: Color) {
     frame.render_widget(Clear, area);
     frame.render_widget(
-        Block::default().style(Style::default().bg(background.into())),
+        Block::default().style(Style::default().bg(background)),
         area,
     );
 }

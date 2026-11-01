@@ -29,7 +29,7 @@ pub(super) fn draw(
         height,
     );
     let envelope = audio_envelope(levels, usize::from(width) * 2);
-    let canvas_background = background.bg.unwrap_or(theme.preview_background.into());
+    let canvas_background = background.bg.unwrap_or(theme.preview_background);
 
     frame.render_widget(
         Canvas::default()

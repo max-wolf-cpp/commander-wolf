@@ -196,10 +196,7 @@ fn compact_frames_and_content_separators_use_independent_styles() {
                     assert_eq!(buffer[(separator.x, separator.y)].symbol(), " ");
                     assert_eq!(buffer[(separator.right() - 1, separator.y)].symbol(), " ");
                     if separator_style != SeparatorStyle::Off {
-                        assert_eq!(
-                            buffer[(separator.x + 1, separator.y)].fg,
-                            theme.line_number.into()
-                        );
+                        assert_eq!(buffer[(separator.x + 1, separator.y)].fg, theme.line_number);
                     }
                 } else {
                     for x in separator.x..separator.right() {

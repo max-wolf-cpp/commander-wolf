@@ -18,9 +18,9 @@ pub(super) fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
         return;
     }
 
-    let background = Style::default().bg(theme.float_background.into());
-    let text = background.fg(theme.text.into());
-    let accent = background.fg(theme.mode_command.into());
+    let background = Style::default().bg(theme.float_background);
+    let text = background.fg(theme.text);
+    let accent = background.fg(theme.mode_command);
     super::floating::clear(frame, area, theme.float_background);
     let inner = super::chrome::draw_titled_block(
         frame,
@@ -63,7 +63,7 @@ pub(super) fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
     if inner.height > 1 {
         frame.render_widget(
             Paragraph::new(output_hint(output)).style(if output.failed {
-                background.fg(theme.error.into())
+                background.fg(theme.error)
             } else {
                 accent
             }),
@@ -201,8 +201,8 @@ mod tests {
                 if mode == crate::icons::IconMode::None {
                     assert_eq!(buffer[(area.x, area.y)].symbol(), "┌");
                 }
-                assert_eq!(buffer[(0, area.y)].fg, theme.mode_command.into());
-                assert_eq!(buffer[(1, area.y + 1)].bg, theme.float_background.into());
+                assert_eq!(buffer[(0, area.y)].fg, theme.mode_command);
+                assert_eq!(buffer[(1, area.y + 1)].bg, theme.float_background);
                 state.shell_output.as_mut().unwrap().scroll = usize::MAX;
                 terminal.draw(|frame| draw(frame, &state, &theme)).unwrap();
                 let buffer = terminal.backend().buffer();

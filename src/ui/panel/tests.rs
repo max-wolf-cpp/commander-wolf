@@ -31,13 +31,13 @@ fn relative_numbers_keep_selected_absolute_and_left_aligned() {
         line_number_span(LineNumberMode::Relative, 2, 5, &theme)
             .style
             .fg,
-        Some(theme.line_number.into())
+        Some(theme.line_number)
     );
     assert_eq!(
         line_number_span(LineNumberMode::Relative, 5, 5, &theme)
             .style
             .fg,
-        Some(theme.current_line_number.into())
+        Some(theme.current_line_number)
     );
 }
 
@@ -78,15 +78,12 @@ fn search_styles_every_occurrence_and_distinguishes_the_current_match() {
     assert_eq!(matches.len(), 3);
     assert_eq!(matches[0].content.as_ref(), "foo");
     assert_eq!(matches[2].content.as_ref(), "foo");
-    assert_eq!(matches[0].style.fg, Some(theme.search_match_text.into()));
+    assert_eq!(matches[0].style.fg, Some(theme.search_match_text));
     let current = name_spans("foo", Some("foo"), true, &theme, theme.text);
-    assert_eq!(
-        current[0].style.fg,
-        Some(theme.search_current_match_text.into())
-    );
+    assert_eq!(current[0].style.fg, Some(theme.search_current_match_text));
     assert_eq!(
         current[0].style.bg,
-        Some(theme.search_current_match_background.into())
+        Some(theme.search_current_match_background)
     );
 }
 
@@ -252,8 +249,8 @@ fn selected_text_color_overrides_icons_on_the_selected_row() {
         .iter()
         .find(|cell| cell.symbol() == "m")
         .unwrap();
-    assert_eq!(match_cell.fg, theme.search_current_match_text.into());
-    assert_eq!(match_cell.bg, theme.search_current_match_background.into());
+    assert_eq!(match_cell.fg, theme.search_current_match_text);
+    assert_eq!(match_cell.bg, theme.search_current_match_background);
 }
 
 #[test]
@@ -306,11 +303,8 @@ fn visual_anchor_highlights_the_contiguous_range() {
     let buffer = terminal.backend().buffer();
     for row in 1..=3 {
         for column in 1..29 {
-            assert_eq!(
-                buffer[(column, row)].bg,
-                theme.visual_selection_background.into()
-            );
-            assert_eq!(buffer[(column, row)].fg, theme.visual_selection_text.into());
+            assert_eq!(buffer[(column, row)].bg, theme.visual_selection_background);
+            assert_eq!(buffer[(column, row)].fg, theme.visual_selection_text);
         }
     }
 }

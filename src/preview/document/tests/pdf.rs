@@ -14,7 +14,9 @@ fn loads_first_pdf_page_and_reports_corruption() {
     assert!(
         raster
             .pixels
-            .chunks_exact(4)
+            .as_chunks::<4>()
+            .0
+            .iter()
             .any(|pixel| pixel[0] > 200 && pixel[1] < 30 && pixel[2] < 30)
     );
 

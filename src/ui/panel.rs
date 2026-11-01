@@ -49,11 +49,8 @@ pub fn draw_panel(
 
     if panel.entries.is_empty() {
         frame.render_widget(
-            List::new([ListItem::new("(empty)")]).style(
-                Style::default()
-                    .fg(theme.inactive_title.into())
-                    .bg(theme.base.into()),
-            ),
+            List::new([ListItem::new("(empty)")])
+                .style(Style::default().fg(theme.inactive_title).bg(theme.base)),
             inner,
         );
         return;
@@ -80,7 +77,7 @@ pub fn draw_panel(
         .collect::<Vec<_>>();
 
     frame.render_widget(
-        List::new(items).style(Style::default().bg(theme.base.into())),
+        List::new(items).style(Style::default().bg(theme.base)),
         inner,
     );
 }
@@ -93,7 +90,7 @@ fn draw_chrome(
     overlay: &PanelOverlay<'_>,
     theme: &Theme,
 ) -> Rect {
-    let background = Style::default().bg(theme.base.into());
+    let background = Style::default().bg(theme.base);
     let title = panel.directory.display().to_string();
 
     match overlay.panel_style {
@@ -103,7 +100,7 @@ fn draw_chrome(
             } else {
                 theme.inactive_border
             };
-            let border_style = Style::default().fg(border_color.into());
+            let border_style = Style::default().fg(border_color);
             let border_style = if !active && theme.dim_secondary {
                 border_style.add_modifier(ratatui::style::Modifier::DIM)
             } else {
@@ -131,9 +128,7 @@ fn draw_chrome(
                 block,
                 &title,
                 super::chrome::bold_if(
-                    Style::default()
-                        .fg(title_color.into())
-                        .bg(title_background.into()),
+                    Style::default().fg(title_color).bg(title_background),
                     theme.title_bold,
                 ),
                 background,
@@ -152,7 +147,6 @@ fn draw_chrome(
                 },
                 background,
                 theme,
-                overlay.icon_mode,
                 if active {
                     theme.borderless_title_text
                 } else {

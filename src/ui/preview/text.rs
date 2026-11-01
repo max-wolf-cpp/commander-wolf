@@ -23,7 +23,7 @@ pub(super) fn draw(
         .enumerate()
         .map(|(index, line)| {
             if !syntax_enabled {
-                Line::styled(line.as_str(), Style::default().fg(theme.text.into()))
+                Line::styled(line.as_str(), Style::default().fg(theme.text))
             } else {
                 syntax_line(
                     line,
@@ -43,12 +43,12 @@ pub(super) fn draw(
     if preview.lines.is_empty() {
         lines.push(Line::styled(
             "Empty file",
-            Style::default().fg(theme.preview_unavailable.into()),
+            Style::default().fg(theme.preview_unavailable),
         ));
     } else if preview.truncated && lines.len() < usize::from(area.height) {
         lines.push(Line::styled(
             "… preview truncated …",
-            Style::default().fg(theme.preview_unavailable.into()),
+            Style::default().fg(theme.preview_unavailable),
         ));
     }
 
@@ -58,14 +58,11 @@ pub(super) fn draw(
     {
         lines.push(Line::styled(
             format!("Syntax highlighting unavailable: {message}"),
-            Style::default().fg(theme.preview_unavailable.into()),
+            Style::default().fg(theme.preview_unavailable),
         ));
     }
 
-    frame.render_widget(
-        Paragraph::new(lines).style(background.fg(theme.text.into())),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).style(background.fg(theme.text)), area);
 }
 
 fn syntax_line<'a>(
@@ -74,7 +71,7 @@ fn syntax_line<'a>(
     palette: &SyntaxTheme,
     fallback: Color,
 ) -> Line<'a> {
-    let plain = Style::default().fg(palette.color(SyntaxCategory::Text, fallback).into());
+    let plain = Style::default().fg(palette.color(SyntaxCategory::Text, fallback));
     let mut spans = Vec::new();
     let mut cursor = 0;
     for token in tokens {
@@ -107,7 +104,7 @@ fn syntax_line<'a>(
 }
 
 fn token_style(category: SyntaxCategory, palette: &SyntaxTheme, fallback: Color) -> Style {
-    let mut style = Style::default().fg(palette.color(category, fallback).into());
+    let mut style = Style::default().fg(palette.color(category, fallback));
     match category {
         SyntaxCategory::Comment | SyntaxCategory::Emphasis => {
             style = style.add_modifier(Modifier::ITALIC)

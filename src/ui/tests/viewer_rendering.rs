@@ -67,7 +67,7 @@ fn modal_viewer_paints_its_media_background_before_presenting_the_image() {
 
     assert_eq!(
         terminal.backend().buffer()[(22, 7)].bg,
-        theme.float_background.into()
+        theme.float_background
     );
 }
 
@@ -111,5 +111,5 @@ fn closing_the_viewer_redraws_its_previous_area_before_restoring_media() {
     terminal.draw(|frame| draw(frame, &state, &theme)).unwrap();
     let buffer = terminal.backend().buffer();
     assert!(!buffer_text(buffer).contains("modal-marker.png"));
-    assert_eq!(buffer[(42, 7)].bg, theme.preview_background.into());
+    assert_eq!(buffer[(42, 7)].bg, theme.preview_background);
 }

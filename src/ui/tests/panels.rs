@@ -156,9 +156,9 @@ fn file_presentation_is_consistent_across_lists_and_icon_modes() {
                 } else {
                     "Source"
                 });
-                assert_eq!(buffer[folder].fg, theme.directory.into());
+                assert_eq!(buffer[folder].fg, theme.directory);
                 if context != "archive" {
-                    assert_eq!(buffer[find(".hidden.rs")].fg, theme.hidden.into());
+                    assert_eq!(buffer[find(".hidden.rs")].fg, theme.hidden);
                 }
                 if mode == IconMode::None && context == "panel" {
                     assert_eq!(file.0, area.x + 2);
@@ -240,7 +240,7 @@ fn active_and_inactive_panels_use_distinct_styles_and_only_active_selection() {
     assert_eq!(buffer[(0, 1)].fg, active.into());
     assert_eq!(buffer[(40, 1)].fg, inactive.into());
     assert_eq!(buffer[(1, 1)].bg, selected.into());
-    assert_eq!(buffer[(41, 1)].bg, theme.base.into());
+    assert_eq!(buffer[(41, 1)].bg, theme.base);
     assert!(buffer.content().iter().any(|cell| cell.symbol() == "🗎"));
 
     theme.borderless_active_title_background = Rgb {
@@ -275,20 +275,14 @@ fn active_and_inactive_panels_use_distinct_styles_and_only_active_selection() {
     terminal.draw(|frame| draw(frame, &state, &theme)).unwrap();
     let buffer = terminal.backend().buffer();
     assert_eq!(buffer[(0, 0)].symbol(), "");
-    assert_eq!(
-        buffer[(0, 0)].fg,
-        theme.borderless_active_title_background.into()
-    );
-    assert_eq!(
-        buffer[(1, 0)].bg,
-        theme.borderless_active_title_background.into()
-    );
+    assert_eq!(buffer[(0, 0)].fg, theme.borderless_active_title_background);
+    assert_eq!(buffer[(1, 0)].bg, theme.borderless_active_title_background);
     assert_eq!(buffer[(borderless.left_panel.right() - 1, 0)].symbol(), "");
     assert_eq!(buffer[(borderless.panel_gap.x, 0)].symbol(), " ");
     assert_eq!(buffer[(borderless.right_panel.x, 0)].symbol(), "");
     assert_eq!(
         buffer[(borderless.right_panel.x + 1, 0)].bg,
-        theme.borderless_inactive_title_background.into()
+        theme.borderless_inactive_title_background
     );
 
     state.workspace.preview_visible = true;
@@ -297,11 +291,11 @@ fn active_and_inactive_panels_use_distinct_styles_and_only_active_selection() {
     let buffer = terminal.backend().buffer();
     assert_eq!(
         buffer[(borderless.right_panel.x + 1, 0)].bg,
-        theme.borderless_preview_title_background.into()
+        theme.borderless_preview_title_background
     );
     assert_eq!(
         buffer[(borderless.right_panel.x + 1, 1)].bg,
-        theme.preview_background.into()
+        theme.preview_background
     );
 
     state.workspace.preview_visible = false;
@@ -312,6 +306,6 @@ fn active_and_inactive_panels_use_distinct_styles_and_only_active_selection() {
     assert_eq!(buffer[(borderless.panel_gap.x, 1)].symbol(), "│");
     assert_eq!(
         buffer[(borderless.panel_gap.x, 1)].fg,
-        theme.inactive_border.into()
+        theme.inactive_border
     );
 }

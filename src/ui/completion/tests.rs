@@ -56,16 +56,13 @@ fn title_does_not_recolor_the_rest_of_the_border() {
             if !(area.x + 4..area.x + 14).contains(&x) {
                 assert_eq!(
                     buffer[(x, area.y)].fg,
-                    theme.active_border.into(),
+                    theme.active_border,
                     "border at column {x}"
                 );
             }
-            assert_eq!(
-                buffer[(x, area.bottom() - 1)].fg,
-                theme.active_border.into()
-            );
+            assert_eq!(buffer[(x, area.bottom() - 1)].fg, theme.active_border);
         }
-        assert_eq!(buffer[(area.x + 5, area.y)].fg, theme.active_title.into());
+        assert_eq!(buffer[(area.x + 5, area.y)].fg, theme.active_title);
     }
 }
 

@@ -118,8 +118,10 @@ fn decode_utf8(bytes: &[u8]) -> Option<String> {
 fn decode_utf16(bytes: &[u8], convert: fn([u8; 2]) -> u16) -> Option<String> {
     let even_length = bytes.len() - bytes.len() % 2;
     let words = bytes[..even_length]
-        .chunks_exact(2)
-        .map(|chunk| convert([chunk[0], chunk[1]]));
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .map(|chunk| convert(*chunk));
     std::char::decode_utf16(words)
         .collect::<Result<String, _>>()
         .ok()

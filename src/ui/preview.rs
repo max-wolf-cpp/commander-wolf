@@ -53,15 +53,15 @@ pub(super) fn draw_with_chrome(
     theme: &Theme,
     chrome: PreviewChrome<'_>,
 ) {
-    let background = Style::default().bg(chrome.background_color.into());
-    draw_chrome(frame, layout, state, theme, &chrome, background);
+    let background = Style::default().bg(chrome.background_color);
+    draw_chrome(frame, layout, theme, &chrome, background);
     content::draw(frame, layout.media, state, theme, background);
 
     let separator = layout.separator.inner(Margin::new(1, 0));
     if !separator.is_empty() && theme.separator_style != crate::theme::SeparatorStyle::Off {
         frame.render_widget(
             Paragraph::new(super::separator_horizontal(theme).repeat(usize::from(separator.width)))
-                .style(background.fg(theme.preview_separator.into())),
+                .style(background.fg(theme.preview_separator)),
             separator,
         );
     }
@@ -78,19 +78,17 @@ pub(super) fn draw_with_chrome(
 fn draw_chrome(
     frame: &mut Frame<'_>,
     layout: PreviewLayout,
-    state: &AppState,
     theme: &Theme,
     chrome: &PreviewChrome<'_>,
     background: Style,
 ) {
-    let title_style =
-        Style::default()
-            .fg(chrome.title_color.into())
-            .add_modifier(if theme.title_bold {
-                Modifier::BOLD
-            } else {
-                Modifier::empty()
-            });
+    let title_style = Style::default()
+        .fg(chrome.title_color)
+        .add_modifier(if theme.title_bold {
+            Modifier::BOLD
+        } else {
+            Modifier::empty()
+        });
     match chrome.panel_style {
         PanelStyle::Framed => {
             super::chrome::draw_titled_block(
@@ -100,7 +98,7 @@ fn draw_chrome(
                     .style(background)
                     .borders(Borders::ALL)
                     .border_set(theme.panel_border_set())
-                    .border_style(Style::default().fg(chrome.border_color.into())),
+                    .border_style(Style::default().fg(chrome.border_color)),
                 chrome.title,
                 title_style,
                 background,
@@ -120,7 +118,6 @@ fn draw_chrome(
                 theme.borderless_preview_title_background,
                 background,
                 theme,
-                state.workspace.icon_mode,
                 theme
                     .preview_title_text
                     .unwrap_or(theme.borderless_title_text),

@@ -131,9 +131,12 @@ pub fn execute(
             panel,
             region,
             raster,
-        } => preview::present_raster(
-            generation, request_id, path, panel, region, raster, media, writer,
-        ),
+        } => Ok(vec![preview::document_raster_result(
+            generation,
+            request_id,
+            path,
+            media.prepare_raster(&raster, panel, region, writer),
+        )]),
         Effect::ClearMediaSurface => media.clear_current(theme, writer).map(|()| Vec::new()),
         Effect::ProbeViewer {
             generation,

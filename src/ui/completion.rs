@@ -77,14 +77,12 @@ fn draw_chrome(
     completion: &CommandCompletion,
     theme: &Theme,
 ) -> Rect {
-    let background = Style::default()
-        .bg(theme.float_background.into())
-        .fg(theme.text.into());
+    let background = Style::default().bg(theme.float_background).fg(theme.text);
     super::floating::clear(frame, area, theme.float_background);
     let block = Block::default()
         .borders(Borders::ALL)
         .border_set(theme.border_set())
-        .border_style(Style::default().fg(theme.active_border.into()))
+        .border_style(Style::default().fg(theme.active_border))
         .style(background);
     if completion.is_argument() {
         let inner = block.inner(area);
@@ -97,7 +95,7 @@ fn draw_chrome(
             block,
             "Commands",
             Style::default()
-                .fg(theme.active_title.into())
+                .fg(theme.active_title)
                 .add_modifier(if theme.title_bold {
                     Modifier::BOLD
                 } else {
@@ -109,9 +107,7 @@ fn draw_chrome(
 }
 
 fn draw_items(frame: &mut Frame<'_>, inner: Rect, completion: &CommandCompletion, theme: &Theme) {
-    let background = Style::default()
-        .bg(theme.float_background.into())
-        .fg(theme.text.into());
+    let background = Style::default().bg(theme.float_background).fg(theme.text);
     let content = inner.inner(Margin::new(1, 0));
     let rows = usize::from(content.height);
     let name_width = name_column_width(content.width, completion);
@@ -121,9 +117,7 @@ fn draw_items(frame: &mut Frame<'_>, inner: Rect, completion: &CommandCompletion
         let y = content.y + row as u16;
         let selected = first + row == completion.selected;
         let style = if selected {
-            background
-                .fg(theme.selected_text.into())
-                .bg(theme.selected.into())
+            background.fg(theme.selected_text).bg(theme.selected)
         } else {
             background
         };
@@ -135,9 +129,9 @@ fn draw_items(frame: &mut Frame<'_>, inner: Rect, completion: &CommandCompletion
             Paragraph::new(item.name.as_str()).style(if selected {
                 style
                     .fg(if theme.selected_text != theme.text {
-                        theme.selected_text.into()
+                        theme.selected_text
                     } else {
-                        theme.active_title.into()
+                        theme.active_title
                     })
                     .add_modifier(Modifier::BOLD)
             } else {
@@ -151,9 +145,9 @@ fn draw_items(frame: &mut Frame<'_>, inner: Rect, completion: &CommandCompletion
             frame.render_widget(
                 Paragraph::new(item.description.as_str()).style(style.fg(
                     if selected && theme.selected_text != theme.text {
-                        theme.selected_text.into()
+                        theme.selected_text
                     } else {
-                        theme.inactive_title.into()
+                        theme.inactive_title
                     },
                 )),
                 Rect::new(content.x + offset, y, content.width - offset, 1),
@@ -199,9 +193,7 @@ fn draw_scrollbar(
     }
 
     let first = completion.selected.saturating_sub(rows - 1);
-    let background = Style::default()
-        .bg(theme.float_background.into())
-        .fg(theme.text.into());
+    let background = Style::default().bg(theme.float_background).fg(theme.text);
     let thumb_height = (rows * rows / completion.items.len()).max(1);
     let thumb_start = first * (rows - thumb_height) / (completion.items.len() - rows);
     let ascii = icon_mode == crate::icons::IconMode::None;
@@ -214,14 +206,11 @@ fn draw_scrollbar(
             (false, false) => "│",
         };
         frame.render_widget(
-            Paragraph::new(symbol).style(
-                background.fg(if thumb {
-                    theme.active_border
-                } else {
-                    theme.line_number
-                }
-                .into()),
-            ),
+            Paragraph::new(symbol).style(background.fg(if thumb {
+                theme.active_border
+            } else {
+                theme.line_number
+            })),
             Rect::new(area.right() - 1, inner.y + row as u16, 1, 1),
         );
     }

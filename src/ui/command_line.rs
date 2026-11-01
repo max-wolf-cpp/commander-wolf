@@ -9,7 +9,7 @@ use crate::dialogs::DialogDisplay;
 use crate::theme::Theme;
 
 pub fn draw(frame: &mut Frame<'_>, area: Rect, state: &AppState, theme: &Theme) {
-    let background = Style::default().bg(theme.command_background.into());
+    let background = Style::default().bg(theme.command_background);
     frame.render_widget(Block::default().style(background), area);
     if let Some(prompt) = &state.rename_prompt {
         if prompt.display == DialogDisplay::CommandLine {
@@ -70,7 +70,7 @@ fn draw_content(
 
     if pending_width > 0 {
         frame.render_widget(
-            Paragraph::new(state.pending_keys.as_str()).style(background.fg(theme.text.into())),
+            Paragraph::new(state.pending_keys.as_str()).style(background.fg(theme.text)),
             Rect::new(
                 inner.right().saturating_sub(pending_width),
                 inner.y,
@@ -106,13 +106,10 @@ fn content_spans<'a>(
     };
     let mut spans = vec![Span::styled(
         primary.to_owned(),
-        background.fg(primary_color.into()),
+        background.fg(primary_color),
     )];
     if state.mode == AppMode::Search && state.search.no_match {
-        spans.push(Span::styled(
-            "  [no matches]",
-            background.fg(theme.error.into()),
-        ));
+        spans.push(Span::styled("  [no matches]", background.fg(theme.error)));
     }
     if let Some(notification) = &state.notification
         && !command_line_dialog
@@ -123,9 +120,9 @@ fn content_spans<'a>(
         spans.push(Span::styled(
             notification.message.as_str(),
             background.fg(if notification.level == NotificationLevel::Error {
-                theme.error.into()
+                theme.error
             } else {
-                theme.inactive_title.into()
+                theme.inactive_title
             }),
         ));
     }

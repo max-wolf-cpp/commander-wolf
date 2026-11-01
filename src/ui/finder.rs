@@ -79,16 +79,15 @@ pub fn preview_layout(area: Rect) -> PreviewLayout {
 
 pub fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
     let layout = resolve_layout(frame.area());
-    let background = Style::default().bg(theme.float_background.into());
+    let background = Style::default().bg(theme.float_background);
     super::floating::clear(frame, layout.modal, theme.float_background);
-    let title_style =
-        Style::default()
-            .fg(theme.active_title.into())
-            .add_modifier(if theme.title_bold {
-                Modifier::BOLD
-            } else {
-                Modifier::empty()
-            });
+    let title_style = Style::default()
+        .fg(theme.active_title)
+        .add_modifier(if theme.title_bold {
+            Modifier::BOLD
+        } else {
+            Modifier::empty()
+        });
 
     draw_results(frame, layout, state, theme, background, title_style);
     draw_input(frame, layout, state, theme, background, title_style);
@@ -123,7 +122,7 @@ fn draw_results(
             .style(background)
             .borders(Borders::ALL)
             .border_set(theme.border_set())
-            .border_style(Style::default().fg(theme.active_border.into())),
+            .border_style(Style::default().fg(theme.active_border)),
         "Results",
         title_style,
         background,
@@ -157,9 +156,9 @@ fn draw_results(
             });
         items.push(
             ListItem::new(text).style(background.fg(if state.finder.error.is_some() {
-                theme.error.into()
+                theme.error
             } else {
-                theme.inactive_title.into()
+                theme.inactive_title
             })),
         );
     }
@@ -192,8 +191,7 @@ fn result_item<'a>(
                 theme.hidden
             } else {
                 icon.themed_display_color(icon_kind, theme)
-            }
-            .into()),
+            }),
         ),
         Span::raw(icon.spacer()),
         Span::styled(
@@ -210,22 +208,19 @@ fn result_item<'a>(
                     theme,
                     state.workspace.color_file_names,
                 )
-            }
-            .into()),
+            }),
         ),
     ];
     if selected && theme.selected_text != theme.text {
         for span in &mut spans {
-            span.style = span.style.fg(theme.selected_text.into());
+            span.style = span.style.fg(theme.selected_text);
         }
     }
 
     ListItem::new(Line::from(spans)).style(if selected {
-        Style::default()
-            .fg(theme.selected_text.into())
-            .bg(theme.selected.into())
+        Style::default().fg(theme.selected_text).bg(theme.selected)
     } else {
-        background.fg(theme.text.into())
+        background.fg(theme.text)
     })
 }
 
@@ -252,7 +247,7 @@ fn draw_input(
             .style(background)
             .borders(Borders::ALL)
             .border_set(theme.border_set())
-            .border_style(Style::default().fg(theme.active_border.into())),
+            .border_style(Style::default().fg(theme.active_border)),
         "Find Files",
         title_style,
         background,
@@ -261,9 +256,9 @@ fn draw_input(
     let gap = available.saturating_sub(prefix.chars().count() + right.chars().count());
     frame.render_widget(
         Paragraph::new(Line::from(vec![
-            Span::styled(prefix.clone(), background.fg(theme.text.into())),
+            Span::styled(prefix.clone(), background.fg(theme.text)),
             Span::raw(" ".repeat(gap)),
-            Span::styled(right, background.fg(theme.inactive_title.into())),
+            Span::styled(right, background.fg(theme.inactive_title)),
         ]))
         .style(background),
         layout.input_inner,

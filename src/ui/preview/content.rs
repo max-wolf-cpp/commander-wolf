@@ -70,7 +70,7 @@ pub(super) fn draw(
                     .map(|line| Line::raw(line.as_str()))
                     .collect::<Vec<_>>(),
             )
-            .style(background.fg(theme.text.into())),
+            .style(background.fg(theme.text)),
             text_area,
         );
         return;
@@ -166,7 +166,7 @@ fn draw_message(
     frame.render_widget(
         Paragraph::new(message)
             .centered()
-            .style(background.fg(theme.preview_unavailable.into())),
+            .style(background.fg(theme.preview_unavailable)),
         area,
     );
 }

@@ -46,7 +46,7 @@ pub(super) fn current_mode(state: &AppState) -> StatusMode {
 }
 
 fn draw_plain(frame: &mut Frame<'_>, area: Rect, state: &AppState, theme: &Theme) {
-    let background = Style::default().bg(theme.status_background.into());
+    let background = Style::default().bg(theme.status_background);
     frame.render_widget(Block::default().style(background), area);
     if area.is_empty() {
         return;
@@ -55,13 +55,10 @@ fn draw_plain(frame: &mut Frame<'_>, area: Rect, state: &AppState, theme: &Theme
     let mode = current_mode(state);
     let mode_width = (mode.label().len() as u16).min(area.width);
     let layout = plain_layout(area, mode_width, state.status_line_options.mode_position);
-    let mode_style = bold_if(
-        background.fg(theme.mode_color(mode).into()),
-        theme.status_bold,
-    );
+    let mode_style = bold_if(background.fg(theme.mode_color(mode)), theme.status_bold);
     frame.render_widget(Paragraph::new(mode.label()).style(mode_style), layout.mode);
 
-    let information_style = background.fg(theme.inactive_title.into());
+    let information_style = background.fg(theme.inactive_title);
     if layout.separator.width > 0 {
         let separator = if state.workspace.icon_mode == crate::icons::IconMode::None {
             " | "
@@ -87,7 +84,7 @@ fn draw_compact(frame: &mut Frame<'_>, area: Rect, state: &AppState, theme: &The
         return;
     }
 
-    let background = Style::default().bg(theme.compact_status_background.into());
+    let background = Style::default().bg(theme.compact_status_background);
     frame.render_widget(Block::default().style(background), area);
     let mode = current_mode(state);
     let mode_background = theme.compact_mode_background_color(mode);
@@ -111,8 +108,8 @@ fn draw_compact(frame: &mut Frame<'_>, area: Rect, state: &AppState, theme: &The
     frame.render_widget(
         Paragraph::new(label).style(bold_if(
             Style::default()
-                .fg(theme.compact_mode_text_color(mode).into())
-                .bg(mode_background.into()),
+                .fg(theme.compact_mode_text_color(mode))
+                .bg(mode_background),
             theme.status_bold,
         )),
         layout.mode,
@@ -120,7 +117,7 @@ fn draw_compact(frame: &mut Frame<'_>, area: Rect, state: &AppState, theme: &The
 
     if layout.separator.width > 0 {
         frame.render_widget(
-            Paragraph::new(glyph).style(background.fg(mode_background.into())),
+            Paragraph::new(glyph).style(background.fg(mode_background)),
             layout.separator,
         );
     }
@@ -132,7 +129,7 @@ fn draw_compact(frame: &mut Frame<'_>, area: Rect, state: &AppState, theme: &The
             ModePosition::Right => information,
         };
         frame.render_widget(
-            Paragraph::new(information).style(background.fg(theme.inactive_title.into())),
+            Paragraph::new(information).style(background.fg(theme.inactive_title)),
             layout.information,
         );
     }

@@ -43,7 +43,7 @@ pub(super) fn draw(
         .collect::<Vec<_>>();
 
     frame.render_widget(
-        List::new(items).style(Style::default().bg(theme.base.into())),
+        List::new(items).style(Style::default().bg(theme.base)),
         area,
     );
 
@@ -88,8 +88,7 @@ fn edit_item<'a>(
                     theme.hidden
                 } else {
                     icon.themed_display_color(icon_kind, theme)
-                }
-                .into(),
+                },
             ),
         ),
         Span::raw(icon.spacer()),
@@ -100,23 +99,20 @@ fn edit_item<'a>(
                     theme.hidden
                 } else {
                     icon.file_label_color(&line.text, icon_kind, theme, color_file_names)
-                }
-                .into(),
+                },
             ),
         ),
     ];
     if index == cursor_row && theme.selected_text != theme.text {
         for span in &mut spans {
-            span.style = span.style.fg(theme.selected_text.into());
+            span.style = span.style.fg(theme.selected_text);
         }
     }
 
     ListItem::new(Line::from(spans)).style(if index == cursor_row {
-        Style::default()
-            .fg(theme.selected_text.into())
-            .bg(theme.selected.into())
+        Style::default().fg(theme.selected_text).bg(theme.selected)
     } else {
-        Style::default().fg(theme.text.into())
+        Style::default().fg(theme.text)
     })
 }
 

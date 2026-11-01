@@ -20,7 +20,7 @@ pub(super) fn draw_archive(
         frame.render_widget(
             Paragraph::new("Empty archive")
                 .centered()
-                .style(background.fg(theme.preview_unavailable.into())),
+                .style(background.fg(theme.preview_unavailable)),
             area,
         );
         return;
@@ -40,14 +40,17 @@ pub(super) fn draw_archive(
             Line::from(vec![
                 Span::styled(
                     icon.glyph,
-                    Style::default().fg(icon.themed_display_color(icon_kind, theme).into()),
+                    Style::default().fg(icon.themed_display_color(icon_kind, theme)),
                 ),
                 Span::raw(icon.spacer()),
                 Span::styled(
                     icon_mode.label(&entry.path, icon_kind),
-                    Style::default().fg(icon
-                        .file_label_color(&entry.path, icon_kind, theme, color_file_names)
-                        .into()),
+                    Style::default().fg(icon.file_label_color(
+                        &entry.path,
+                        icon_kind,
+                        theme,
+                        color_file_names,
+                    )),
                 ),
             ])
         })
@@ -55,14 +58,11 @@ pub(super) fn draw_archive(
     if preview.truncated && lines.len() < usize::from(area.height) {
         lines.push(Line::styled(
             "… archive listing truncated …",
-            Style::default().fg(theme.preview_unavailable.into()),
+            Style::default().fg(theme.preview_unavailable),
         ));
     }
 
-    frame.render_widget(
-        Paragraph::new(lines).style(background.fg(theme.text.into())),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).style(background.fg(theme.text)), area);
 }
 
 pub(super) fn draw_directory(
@@ -78,7 +78,7 @@ pub(super) fn draw_directory(
         frame.render_widget(
             Paragraph::new("Empty directory")
                 .centered()
-                .style(background.fg(theme.preview_unavailable.into())),
+                .style(background.fg(theme.preview_unavailable)),
             area,
         );
         return;
@@ -102,8 +102,7 @@ pub(super) fn draw_directory(
                         theme.hidden
                     } else {
                         icon.themed_display_color(icon_kind, theme)
-                    }
-                    .into()),
+                    }),
                 ),
                 Span::raw(icon.spacer()),
                 Span::styled(
@@ -112,8 +111,7 @@ pub(super) fn draw_directory(
                         theme.hidden
                     } else {
                         icon.file_label_color(&entry.name, icon_kind, theme, color_file_names)
-                    }
-                    .into()),
+                    }),
                 ),
             ])
         })
@@ -121,12 +119,9 @@ pub(super) fn draw_directory(
     if preview.truncated && lines.len() < usize::from(area.height) {
         lines.push(Line::styled(
             "… directory listing truncated …",
-            Style::default().fg(theme.preview_unavailable.into()),
+            Style::default().fg(theme.preview_unavailable),
         ));
     }
 
-    frame.render_widget(
-        Paragraph::new(lines).style(background.fg(theme.text.into())),
-        area,
-    );
+    frame.render_widget(Paragraph::new(lines).style(background.fg(theme.text)), area);
 }

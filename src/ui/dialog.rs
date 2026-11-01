@@ -43,16 +43,14 @@ pub fn draw(frame: &mut Frame<'_>, state: &AppState, theme: &Theme) {
         .style(background)
         .borders(Borders::ALL)
         .border_set(theme.border_set())
-        .border_style(Style::default().fg(accent.into()));
+        .border_style(Style::default().fg(accent));
     let inner = block.inner(area);
     super::chrome::draw_titled_block(
         frame,
         area,
         block,
         content.title,
-        Style::default()
-            .fg(accent.into())
-            .add_modifier(Modifier::BOLD),
+        Style::default().fg(accent).add_modifier(Modifier::BOLD),
         background,
     );
 

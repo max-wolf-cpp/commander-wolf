@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use fox_media_term::Region;
 
 use crate::app::Action;
-use crate::preview::{DocumentRequest, ImageViewerLayout, RasterFrame};
+use crate::preview::{DocumentRequest, ImageViewerLayout};
 use crate::terminal::TerminalSize;
 use crate::workspace::PanelId;
 
@@ -121,31 +121,25 @@ pub(super) fn start_document(
     Ok(Vec::new())
 }
 
-pub(super) fn present_raster(
+pub(super) fn document_raster_result(
     generation: u64,
     request_id: u64,
     path: PathBuf,
-    panel: PanelId,
-    region: Region,
-    raster: RasterFrame,
-    media: &mut MediaRuntime,
-    writer: &mut TerminalWriter,
-) -> Result<Vec<Action>, String> {
-    Ok(vec![
-        match media.prepare_raster(&raster, panel, region, writer) {
-            Ok(()) => Action::PreviewDocumentRasterPresented {
-                generation,
-                request_id,
-                path,
-            },
-            Err(message) => Action::PreviewDocumentFailed {
-                generation,
-                request_id,
-                path,
-                message,
-            },
+    result: Result<(), String>,
+) -> Action {
+    match result {
+        Ok(()) => Action::PreviewDocumentRasterPresented {
+            generation,
+            request_id,
+            path,
         },
-    ])
+        Err(message) => Action::PreviewDocumentFailed {
+            generation,
+            request_id,
+            path,
+            message,
+        },
+    }
 }
 
 pub(super) fn probe_viewer(

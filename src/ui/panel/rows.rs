@@ -34,7 +34,7 @@ pub(super) fn entry_item<'a>(
             } else {
                 " "
             },
-            Style::default().fg(theme.active_title.into()),
+            Style::default().fg(theme.active_title),
         ),
         Span::raw(" "),
         Span::styled(
@@ -43,8 +43,7 @@ pub(super) fn entry_item<'a>(
                 theme.hidden
             } else {
                 icon.themed_display_color(icon_kind, theme)
-            }
-            .into()),
+            }),
         ),
         Span::raw(icon.spacer()),
     ];
@@ -66,8 +65,7 @@ pub(super) fn entry_item<'a>(
             theme.hidden
         } else {
             theme.directory
-        }
-        .into()),
+        }),
     ));
 
     let selected = active && index == panel.selected;
@@ -105,13 +103,13 @@ fn apply_selection_colors(
         for span in spans {
             span.style = span
                 .style
-                .fg(theme.visual_selection_text.into())
-                .bg(theme.visual_selection_background.into());
+                .fg(theme.visual_selection_text)
+                .bg(theme.visual_selection_background);
         }
     } else if selected && theme.selected_text != theme.text {
         for span in spans {
             if span.style.bg.is_none() {
-                span.style = span.style.fg(theme.selected_text.into());
+                span.style = span.style.fg(theme.selected_text);
             }
         }
     } else if inactive_selected {
@@ -119,7 +117,7 @@ fn apply_selection_colors(
             if span.style.bg.is_none() {
                 span.style = span
                     .style
-                    .fg(theme.inactive_selected_text.unwrap_or(theme.text).into());
+                    .fg(theme.inactive_selected_text.unwrap_or(theme.text));
             }
         }
     }
@@ -133,18 +131,16 @@ fn selection_style(
 ) -> Style {
     if visually_selected {
         Style::default()
-            .fg(theme.visual_selection_text.into())
-            .bg(theme.visual_selection_background.into())
+            .fg(theme.visual_selection_text)
+            .bg(theme.visual_selection_background)
     } else if selected {
-        Style::default()
-            .fg(theme.selected_text.into())
-            .bg(theme.selected.into())
+        Style::default().fg(theme.selected_text).bg(theme.selected)
     } else if inactive_selected {
         Style::default()
-            .fg(theme.inactive_selected_text.unwrap_or(theme.text).into())
-            .bg(theme.inactive_selected.unwrap().into())
+            .fg(theme.inactive_selected_text.unwrap_or(theme.text))
+            .bg(theme.inactive_selected.unwrap())
     } else {
-        Style::default().fg(theme.text.into())
+        Style::default().fg(theme.text)
     }
 }
 
@@ -165,7 +161,7 @@ pub(super) fn name_spans<'a>(
     theme: &Theme,
     base_color: Color,
 ) -> Vec<Span<'a>> {
-    let base_style = Style::default().fg(base_color.into());
+    let base_style = Style::default().fg(base_color);
     let Some(query) = query.filter(|query| !query.is_empty()) else {
         return vec![Span::styled(name, base_style)];
     };
@@ -177,12 +173,12 @@ pub(super) fn name_spans<'a>(
 
     let match_style = if current {
         Style::default()
-            .fg(theme.search_current_match_text.into())
-            .bg(theme.search_current_match_background.into())
+            .fg(theme.search_current_match_text)
+            .bg(theme.search_current_match_background)
     } else {
         Style::default()
-            .fg(theme.search_match_text.into())
-            .bg(theme.search_match_background.into())
+            .fg(theme.search_match_text)
+            .bg(theme.search_match_background)
     };
     let mut spans = Vec::new();
     let mut cursor = 0;
@@ -227,9 +223,9 @@ pub(super) fn line_number_span(
     Span::styled(
         line_number(mode, index, selected),
         Style::default().fg(if index == selected {
-            theme.current_line_number.into()
+            theme.current_line_number
         } else {
-            theme.line_number.into()
+            theme.line_number
         }),
     )
 }
