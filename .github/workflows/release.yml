@@ -123,10 +123,19 @@ jobs:
           echo 'CC=clang-20' >> "$GITHUB_ENV"
           echo 'CXX=clang++-20' >> "$GITHUB_ENV"
 
-      - name: Select macOS deployment target
+      - name: Select macOS toolchain and deployment target
         if: runner.os == 'macOS'
         shell: bash
         run: |
+          set -euo pipefail
+          unset DEVELOPER_DIR SDKROOT
+          sudo "$(command -v xcodes)" select 26.3
+          DEVELOPER_DIR="$(xcode-select -p)"
+          export DEVELOPER_DIR
+          SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+          export SDKROOT
+          echo "DEVELOPER_DIR=$DEVELOPER_DIR" >> "$GITHUB_ENV"
+          echo "SDKROOT=$SDKROOT" >> "$GITHUB_ENV"
           echo 'MACOSX_DEPLOYMENT_TARGET=14.0' >> "$GITHUB_ENV"
           xcodebuild -version
 

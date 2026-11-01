@@ -41,6 +41,29 @@ unset(FFMPEG_LIBRARY CACHE)
 find_package(FFMPEG REQUIRED)
 find_package(Stb REQUIRED)
 find_package(Threads REQUIRED)
+
+include(CMakePushCheckState)
+cmake_push_check_state(RESET)
+set(CMAKE_REQUIRED_LIBRARIES Threads::Threads)
+check_cxx_source_compiles(
+    "#include <stop_token>
+    #include <thread>
+    int main() {
+        std::jthread worker([](std::stop_token token) { (void)token.stop_requested(); });
+        worker.request_stop();
+        worker.join();
+        return 0;
+    }"
+    FOX_MEDIA_TERM_HAS_STD_JTHREAD
+)
+cmake_pop_check_state()
+if(NOT FOX_MEDIA_TERM_HAS_STD_JTHREAD)
+    message(FATAL_ERROR
+        "Fox Media Term requires standard library support for std::jthread and std::stop_token. "
+        "With AppleClang, select full Xcode 26 or newer."
+    )
+endif()
+
 find_package(unofficial-libsixel CONFIG REQUIRED)
 
 find_path(MINIAUDIO_INCLUDE_DIR NAMES miniaudio.h REQUIRED)

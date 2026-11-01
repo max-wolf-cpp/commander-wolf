@@ -10,11 +10,11 @@ The [release workflow](../.github/workflows/release.yml) runs only through **Act
 |---|---|---|---|
 | Windows x64 ZIP | `windows-2022` | Clang-CL with the Visual Studio x64 SDK environment | Windows 10+; compiler runtime DLLs bundled |
 | Linux x64 tar.gz | `ubuntu-24.04` | LLVM 20 with libstdc++ | glibc 2.39+ and a compatible libstdc++ runtime |
-| macOS arm64 tar.gz | `macos-15` | AppleClang/Xcode | Apple Silicon, macOS 14+; ad-hoc signed, not notarized |
+| macOS arm64 tar.gz | `macos-15` | AppleClang/Xcode 26.3 | Apple Silicon, macOS 14+; ad-hoc signed, not notarized |
 
 The matrix builds natively. Passing another Rust `--target` is not enough to cross-compile the C++ dependencies, and the binding build script rejects mismatched host/target builds. An Intel macOS job is not part of the initial matrix.
 
-The workflow pins Rust 1.99.1 and official actions by commit SHA. It bootstraps vcpkg at the manifest baseline, installs Linux compiler prerequisites, and exports the Windows developer environment between steps. Rust downloads and vcpkg binary packages are cached; CMake build trees and their machine-specific absolute paths are not cached. Temporary Actions artifacts expire after three days. Standard runner compute is free for public repositories; artifact/cache storage still has separate allowances.
+The workflow pins Rust 1.99.1 and official actions by commit SHA. It selects the preinstalled Xcode 26.3 on macOS and exports its developer directory and SDK for all later steps, retaining the macOS 14.0 deployment target. It bootstraps vcpkg at the manifest baseline, installs Linux compiler prerequisites, and exports the Windows developer environment between steps. Rust downloads and vcpkg binary packages are cached; CMake build trees and their machine-specific absolute paths are not cached. Temporary Actions artifacts expire after three days. Standard runner compute is free for public repositories; artifact/cache storage still has separate allowances.
 
 ## Local Windows verification
 

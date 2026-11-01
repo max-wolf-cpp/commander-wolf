@@ -56,7 +56,7 @@ Build prerequisites:
 | Native build | CMake 3.24+, Git, and a bootstrapped vcpkg checkout |
 | Windows | Clang-CL, Ninja, MSVC C++ build tools, and the Windows SDK; use an x64 Visual Studio developer shell |
 | Linux | Clang 19+ with a compatible libstdc++ (or another C++23-capable standard library), Ninja, and native build tools |
-| macOS | Full Xcode with AppleClang and a C++23-capable standard library |
+| macOS | Full Xcode 26+ with AppleClang and a C++23-capable standard library |
 
 Set `VCPKG_ROOT` to your vcpkg checkout, then run:
 

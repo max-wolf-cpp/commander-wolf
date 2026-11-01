@@ -9,7 +9,7 @@ Commander Wolf is a Cargo workspace containing the Rust application and the safe
 - A current stable Rust toolchain, including Cargo and support for Rust 2024.
 - Git and CMake 3.24 or newer on `PATH`.
 - A bootstrapped [vcpkg](https://github.com/microsoft/vcpkg) checkout, with `VCPKG_ROOT` pointing to its root.
-- A C++23 compiler and matching standard library, including `std::expected`. Clang with libstdc++ requires Clang 19 or newer; CMake checks this capability before building.
+- A C++23 compiler and matching standard library, including `std::expected`, `std::jthread`, and `std::stop_token`. Clang with libstdc++ requires Clang 19 or newer; CMake checks these capabilities before building.
 - Network access on the first build for Cargo, vcpkg, and CMake downloads.
 
 Use your platform's package manager or official installers for the native toolchain. vcpkg's [host requirements](https://learn.microsoft.com/en-us/vcpkg/concepts/supported-hosts) list the platform utilities needed by its ports.
@@ -71,7 +71,7 @@ Linux binaries also depend on their platform C/C++ runtime and the native depend
 
 ## macOS
 
-The `AppleClang` preset uses the Xcode generator, so install **full Xcode**, select it as the active developer directory, and complete its first-run setup. Install CMake and the utilities listed in vcpkg's host requirements, including pkg-config where required by a port. Both the compiler and standard library must support C++23.
+The `AppleClang` preset uses the Xcode generator, so install **full Xcode 26 or newer**, select it as the active developer directory, and complete its first-run setup. Xcode 26 provides non-experimental `std::jthread` and `std::stop_token` support; Xcode 16.4 does not expose them by default. Install CMake and the utilities listed in vcpkg's host requirements, including pkg-config where required by a port. Both the compiler and standard library must support C++23.
 
 Bootstrap vcpkg and build using the same shell commands as Linux above. Cargo selects `AppleClang` automatically. The output is `target/release/cwolf`.
 
