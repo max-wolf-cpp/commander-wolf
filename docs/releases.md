@@ -47,6 +47,8 @@ python Packaging/package_release.py --build-log $taskBuildLog --cargo-metadata $
 if ($LASTEXITCODE -ne 0) { throw 'Release packaging failed.' }
 ```
 
+ZIP timestamps outside 1980-2107 are clamped to the format limits; original notice contents and source-file timestamps are preserved. Packaging regression checks can be run with `python -m unittest discover -s Packaging -p test_package_release.py`.
+
 The archive and its `.sha256` file appear under `Dist/Releases/`. The packager uses the exact native install directory reported by this Cargo build rather than guessing between old build directories. Rebuild before packaging after source changes. Native build configuration/compiler/triplet details are installed by CMake and recorded in the archive; Debug native libraries and debug compiler runtimes are rejected. Local uncommitted changes are recorded as `dirty: true` in `BuildInfo.json`.
 
 ## What packaging checks
@@ -64,7 +66,7 @@ After creating an archive, packaging extracts it into a new temporary location, 
 3. Open **Actions → Build release archives → Run workflow**.
 4. Enter the release tag matching `v` plus the version in `Cargo.toml`, initially `v0.1.0`. If that tag exists, it must point to the selected workflow commit.
 5. Leave **Create or update a draft release** enabled to prepare a release after all three platforms pass. Disable it to receive only short-lived Actions artifacts.
-6. Inspect the jobs. Each platform runs Rust formatting, Rust/binding tests, Clippy, standalone native tests, the release build, packaging, and extracted-archive loader checks.
+6. Inspect the jobs. Each platform runs packaging regression checks, Rust formatting, Rust/binding tests, Clippy, standalone native tests, the release build, packaging, and extracted-archive loader checks.
 7. Download the archives, check the relevant terminal/media scenarios, and review dependency notices. Only then publish the draft manually.
 
 The workflow never publishes a release. It refuses to replace assets of an already published release. A successful rerun may replace files in an existing draft for the same tag/commit; it does not move an existing tag. If the tag does not exist, the draft targets the workflow commit for the release tag. Updating that draft also updates its target commit and notes without moving an existing tag.

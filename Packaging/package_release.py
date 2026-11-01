@@ -194,7 +194,9 @@ def verify_checksums(directory: Path) -> None:
 def create_archive(directory: Path, output: Path) -> Path:
     if sys.platform == "win32":
         archive = output / f"{directory.name}.zip"
-        with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as stream:
+        # Crate notices can retain epoch timestamps outside ZIP's 1980-2107 range.
+        # Clamp archive timestamps without changing source dates or file contents.
+        with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, strict_timestamps=False) as stream:
             for path in sorted(directory.rglob("*")):
                 if path.is_file():
                     stream.write(path, path.relative_to(directory.parent))

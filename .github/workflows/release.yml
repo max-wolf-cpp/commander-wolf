@@ -178,6 +178,12 @@ jobs:
           "VCPKG_BINARY_SOURCES=clear;files,$taskCache,readwrite" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
           'FOX_MEDIA_TERM_CMAKE_PRESET=${{ matrix.preset }}' | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
 
+      - name: Check release packaging regressions
+        shell: pwsh
+        run: |
+          & '${{ matrix.python }}' -m unittest discover -s Packaging -p test_package_release.py
+          exit $LASTEXITCODE
+
       - name: Check Rust formatting
         shell: pwsh
         run: |
