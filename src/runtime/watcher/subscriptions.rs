@@ -56,6 +56,7 @@ impl DirectoryWatcher {
             match self.watcher.unwatch(&path) {
                 Ok(()) => {
                     self.watched.remove(&path);
+                    self.watch_aliases.remove(&path);
                     self.failed.remove(&path);
                     self.reported_failures.remove(&path);
                 }
@@ -89,6 +90,13 @@ impl DirectoryWatcher {
 
             match self.watcher.watch(&path, RecursiveMode::NonRecursive) {
                 Ok(()) => {
+                    // Resolve directory aliases before deletion events make their paths unavailable.
+                    if let Ok(resolved) = path.canonicalize()
+                        && resolved != path
+                    {
+                        self.watch_aliases.insert(path.clone(), resolved);
+                    }
+
                     self.watched.insert(path.clone());
                     self.failed.remove(&path);
                     self.reported_failures.remove(&path);

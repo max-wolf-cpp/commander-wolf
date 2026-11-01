@@ -26,13 +26,7 @@ impl DirectoryWatcher {
                     }
 
                     for path in event.paths {
-                        if event_affects(
-                            &path,
-                            &self.directories,
-                            self.preview_directory.as_deref(),
-                        ) {
-                            self.record_path(path, now);
-                        }
+                        self.record_event_path(path, now);
                     }
                 }
                 Err(error) => {
@@ -49,6 +43,28 @@ impl DirectoryWatcher {
                     }
                 }
                 _ => {}
+            }
+        }
+    }
+
+    fn record_event_path(&mut self, path: PathBuf, now: Instant) {
+        let aliased_paths = self
+            .watch_aliases
+            .iter()
+            .filter_map(|(alias, resolved)| {
+                if path == *resolved {
+                    Some(alias.clone())
+                } else if path.parent() == Some(resolved.as_path()) {
+                    path.file_name().map(|name| alias.join(name))
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>();
+
+        for path in std::iter::once(path).chain(aliased_paths) {
+            if event_affects(&path, &self.directories, self.preview_directory.as_deref()) {
+                self.record_path(path, now);
             }
         }
     }

@@ -100,6 +100,60 @@ fn unrelated_sibling_events_do_not_refresh_panel() {
 }
 
 #[test]
+fn canonical_events_preserve_panel_and_preview_aliases_for_removed_paths() {
+    let mut watcher = DirectoryWatcher::new().unwrap();
+    watcher.directories = [
+        PathBuf::from("/logical/left"),
+        PathBuf::from("/logical/right"),
+    ];
+    watcher.preview_directory = Some(PathBuf::from("/logical/preview"));
+    let resolved = PathBuf::from("/physical/shared");
+    for alias in watcher
+        .directories
+        .iter()
+        .chain(watcher.preview_directory.iter())
+    {
+        watcher
+            .watch_aliases
+            .insert(alias.clone(), resolved.clone());
+    }
+
+    let (sender, events) = mpsc::sync_channel(1);
+    watcher.events = events;
+    let now = Instant::now();
+    // The removed paths do not exist, so event handling must not resolve them on disk.
+    for name in [Some("removed.txt"), None] {
+        let path = name.map_or_else(|| resolved.clone(), |name| resolved.join(name));
+        sender
+            .send(Ok(Event::new(notify::EventKind::Remove(
+                notify::event::RemoveKind::Any,
+            ))
+            .add_path(path)))
+            .unwrap();
+        watcher.collect_events(now);
+
+        let expected = watcher
+            .directories
+            .iter()
+            .chain(watcher.preview_directory.iter())
+            .map(|alias| name.map_or_else(|| alias.clone(), |name| alias.join(name)))
+            .collect::<BTreeSet<_>>();
+        assert_eq!(watcher.pending_paths, expected);
+        assert!(watcher.due_at.is_some());
+        watcher.pending_paths.clear();
+        watcher.due_at = None;
+    }
+
+    sender
+        .send(Ok(Event::new(notify::EventKind::Any)
+            .add_path(PathBuf::from("/physical/sibling/unrelated.txt"))))
+        .unwrap();
+    watcher.collect_events(now);
+    assert!(watcher.pending_paths.is_empty());
+    assert!(watcher.due_at.is_none());
+}
+
+#[test]
 fn stale_worker_result_is_discarded_after_a_panel_refresh() {
     let mut state = AppState::new(
         PathBuf::from("."),

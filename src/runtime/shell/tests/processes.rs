@@ -3,7 +3,7 @@ use super::*;
 #[test]
 fn captures_both_streams_cwd_and_unsuccessful_exit_without_a_system_shell() {
     let mut runtime = ShellRuntime::default();
-    let directory: std::path::PathBuf = std::env::temp_dir().components().collect();
+    let directory = std::env::temp_dir();
     assert!(
         runtime
             .start("shell-fixture", &directory, Some(fixture_shell()))
@@ -21,8 +21,15 @@ fn captures_both_streams_cwd_and_unsuccessful_exit_without_a_system_shell() {
 
     assert!(output.contains("stdout 狼"), "{output}");
     assert!(output.contains("stderr 狼"), "{output}");
-    assert!(
-        output.contains(&format!("cwd={}", directory.display())),
+    let reported_directory = output
+        .lines()
+        .find_map(|line| line.strip_prefix("cwd="))
+        .unwrap_or_else(|| panic!("missing current directory in output: {output}"));
+    assert_eq!(
+        std::path::Path::new(reported_directory)
+            .canonicalize()
+            .unwrap(),
+        directory.canonicalize().unwrap(),
         "{output}"
     );
     assert!(actions.contains(&Action::ShellFinished {
