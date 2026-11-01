@@ -67,11 +67,9 @@ impl TerminalAppearance {
     }
 }
 
+/// Performs a blocking query for callers with exclusive access to terminal input.
 pub fn probe() -> Option<TerminalAppearance> {
-    let mut request = b"\x1b]11;?\x07\x1b[?996n".to_vec();
-    for index in 0..16 {
-        request.extend_from_slice(format!("\x1b]4;{index};?\x07").as_bytes());
-    }
+    let request = appearance_query(true);
 
     fox_media_term::query_terminal(&request, std::time::Duration::from_millis(120))
         .ok()
@@ -81,6 +79,24 @@ pub fn probe() -> Option<TerminalAppearance> {
                 || appearance.scheme != Scheme::Unknown
                 || appearance.palette.is_some()
         })
+}
+
+pub(crate) fn color_query() -> Vec<u8> {
+    // Crossterm's Unix reader does not expose private CSI scheme reports.
+    // Query OSC colors during the TUI session and infer light/dark from OSC 11.
+    appearance_query(false)
+}
+
+fn appearance_query(include_scheme_report: bool) -> Vec<u8> {
+    let mut request = b"\x1b]11;?\x07".to_vec();
+    if include_scheme_report {
+        request.extend_from_slice(b"\x1b[?996n");
+    }
+    for index in 0..16 {
+        request.extend_from_slice(format!("\x1b]4;{index};?\x07").as_bytes());
+    }
+
+    request
 }
 
 pub fn reports_from_response(bytes: &[u8]) -> TerminalAppearance {

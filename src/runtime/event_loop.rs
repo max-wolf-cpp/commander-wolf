@@ -1,13 +1,14 @@
 use std::collections::VecDeque;
 use std::time::{Duration, Instant};
 
-use crossterm::event::{self, Event, KeyEventKind};
+use crossterm::event::{Event, KeyEventKind};
 
 use crate::app::{Action, AppEvent, AppState, InputEvent, Notification};
 use crate::cli::Arguments;
 use crate::config::ConfigRuntime;
 use crate::input::KeyResolver;
 use crate::terminal::TerminalSize;
+use crate::terminal_appearance::TerminalAppearance;
 use crate::theme::Theme;
 
 use super::actions::process_actions;
@@ -15,6 +16,7 @@ use super::document::DocumentRuntime;
 use super::finder::FinderRuntime;
 use super::input::handle_event;
 use super::media::MediaRuntime;
+use super::terminal_input::TerminalInput;
 use super::terminal_writer::TerminalWriter;
 use super::{Persistence, RuntimeResources, clipboard, effects, operations, shell, tree, watcher};
 
@@ -60,7 +62,8 @@ pub(super) fn run_event_loop(
     }
 
     let mut ui_dirty = true;
-    let mut last_appearance_probe = Instant::now();
+    let mut terminal_input = TerminalInput::default();
+    let mut last_appearance_probe: Option<Instant> = None;
     let mut appearance_recheck_needed = true;
 
     while !state.should_quit {
@@ -82,6 +85,10 @@ pub(super) fn run_event_loop(
             &mut ui_dirty,
         )?;
 
+        if let Some(appearance) = terminal_input.take_appearance() {
+            ui_dirty |= refresh_terminal_appearance(appearance, &config, &state, &mut theme)?;
+        }
+
         appearance_recheck_needed |= writer.take_resumed();
         if let Some(watcher) = &mut directory_watcher {
             if let Some(action) = watcher.synchronize(&state) {
@@ -97,13 +104,14 @@ pub(super) fn run_event_loop(
             ui_dirty = false;
         }
 
-        if (appearance_recheck_needed || last_appearance_probe.elapsed() >= Duration::from_secs(10))
-            && !event::poll(Duration::ZERO)
-                .map_err(|error| format!("cannot poll terminal input: {error}"))?
-        {
-            ui_dirty |= refresh_terminal_appearance(&config, &state, &mut theme)?;
-
-            last_appearance_probe = Instant::now();
+        let appearance_query_due =
+            last_appearance_probe.is_none_or(|last| last.elapsed() >= Duration::from_secs(10));
+        let can_query_appearance =
+            last_appearance_probe.is_none_or(|last| last.elapsed() >= Duration::from_millis(500));
+        if (appearance_recheck_needed || appearance_query_due) && can_query_appearance {
+            terminal_input.begin_appearance_query();
+            writer.write_query(&crate::terminal_appearance::color_query())?;
+            last_appearance_probe = Some(Instant::now());
             appearance_recheck_needed = false;
         }
 
@@ -125,27 +133,24 @@ pub(super) fn run_event_loop(
         } else {
             Duration::ZERO
         };
-        if !event::poll(input_wait)
-            .map_err(|error| format!("cannot poll terminal input: {error}"))?
-        {
+        let Some(input) = terminal_input.poll(input_wait)? else {
             continue;
-        }
+        };
 
-        let event =
-            match event::read().map_err(|error| format!("cannot read terminal input: {error}"))? {
-                Event::Key(key) if key.kind == KeyEventKind::Press => {
-                    Some(AppEvent::Input(InputEvent::Key(key)))
-                }
-                Event::Resize(columns, rows) => {
-                    Some(AppEvent::Input(InputEvent::Resize { columns, rows }))
-                }
-                Event::FocusGained => {
-                    appearance_recheck_needed = true;
-                    None
-                }
-                Event::Mouse(_) => None,
-                _ => None,
-            };
+        let event = match input {
+            Event::Key(key) if key.kind == KeyEventKind::Press => {
+                Some(AppEvent::Input(InputEvent::Key(key)))
+            }
+            Event::Resize(columns, rows) => {
+                Some(AppEvent::Input(InputEvent::Resize { columns, rows }))
+            }
+            Event::FocusGained => {
+                appearance_recheck_needed = true;
+                None
+            }
+            Event::Mouse(_) => None,
+            _ => None,
+        };
         if let Some(event) = event {
             handle_event(event, &state, &config, &mut resolver, &mut actions);
         }
@@ -218,14 +223,11 @@ fn startup_state(
 }
 
 fn refresh_terminal_appearance(
+    appearance: TerminalAppearance,
     config: &ConfigRuntime,
     state: &AppState,
     theme: &mut Theme,
 ) -> Result<bool, String> {
-    let Some(appearance) = crate::terminal_appearance::probe() else {
-        return Ok(false);
-    };
-
     if !config.update_terminal_appearance(appearance) {
         return Ok(false);
     }

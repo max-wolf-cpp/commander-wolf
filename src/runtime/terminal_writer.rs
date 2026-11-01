@@ -94,6 +94,13 @@ impl TerminalWriter {
         Ok(())
     }
 
+    pub fn write_query(&mut self, request: &[u8]) -> Result<(), String> {
+        self.output
+            .write_all(request)
+            .and_then(|()| self.output.flush())
+            .map_err(|error| format!("cannot write terminal query: {error}"))
+    }
+
     pub fn write_media(&mut self, payload: &Buffer) -> Result<(), String> {
         let _is_ansi_utf8 = payload.uses_ansi_utf8();
         self.output

@@ -22,6 +22,7 @@ mod process_tree;
 mod session;
 mod shell;
 mod state_file;
+mod terminal_input;
 mod terminal_writer;
 mod tree;
 mod watcher;
@@ -52,6 +53,8 @@ pub fn run() -> Result<(), String> {
 
     let (columns, rows) = crossterm::terminal::size()
         .map_err(|error| format!("cannot read terminal size: {error}"))?;
+    // Native capability/geometry queries own the console only before the TUI
+    // starts. During the session, TerminalInput owns replies and keyboard input.
     let detected = Environment::detect(i32::from(columns), i32::from(rows))
         .map_err(|error| error.to_string())?;
     let environment = Environment {
