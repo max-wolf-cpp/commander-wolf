@@ -1,14 +1,32 @@
 <p align="center">
-  <img src="logo.png" alt="Commander Wolf logo" width="240">
+  <img src="logo.png" alt="Commander Wolf logo" width="180">
 </p>
 
 <h1 align="center">Commander Wolf</h1>
+
+<p align="center">
+  <a href="Cargo.toml"><img src="https://img.shields.io/badge/version-0.1.0-cba6f7?style=flat&amp;labelColor=313244" alt="Version 0.1.0"></a>
+  <a href="https://github.com/max-wolf-cpp/commander-wolf/actions/workflows/release.yml"><img src="https://github.com/max-wolf-cpp/commander-wolf/actions/workflows/release.yml/badge.svg?branch=master" alt="Release build status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-a6e3a1?style=flat&amp;labelColor=313244" alt="MIT license"></a>
+</p>
+
+<p align="center">
+  <a href="docs/building.md"><img src="https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-89b4fa?style=flat&amp;labelColor=313244" alt="Windows, Linux and macOS"></a>
+  <a href="Cargo.toml"><img src="https://img.shields.io/badge/Rust-2024-fab387?style=flat&amp;labelColor=313244&amp;logo=rust&amp;logoColor=cdd6f4" alt="Rust 2024 edition"></a>
+  <a href="docs/architecture.md"><img src="https://img.shields.io/badge/C%2B%2B-23-89b4fa?style=flat&amp;labelColor=313244&amp;logo=cplusplus&amp;logoColor=cdd6f4" alt="C++23"></a>
+  <a href="docs/user-guide.md#user-configuration"><img src="https://img.shields.io/badge/Lua-5.5-cba6f7?style=flat&amp;labelColor=313244&amp;logo=lua&amp;logoColor=cdd6f4" alt="Lua 5.5 configuration"></a>
+  <a href="https://ratatui.rs/"><img src="https://img.shields.io/badge/UI-Ratatui-a6e3a1?style=flat&amp;labelColor=313244&amp;logo=ratatui&amp;logoColor=cdd6f4" alt="Ratatui"></a>
+</p>
 
 A dual-pane terminal file manager with Vim-style navigation, Lua configuration, and built-in image, video, audio, and document previews. The command is **`cwolf`** (`cwolf.exe` on Windows).
 
 Commander Wolf is written in Rust with Ratatui. Its native media engine, **Fox Media Term**, is a separate C++23 library included in this repository and built automatically by Cargo.
 
 [Build instructions](docs/building.md) · [User guide](docs/user-guide.md) · [Architecture](docs/architecture.md) · [Release builds](docs/releases.md) · [MIT license](LICENSE)
+
+![Commander Wolf showing a photograph and file metadata in the preview panel](docs/Media/image-preview.png)
+
+*Catppuccin Mocha, modern style. Image preview and metadata alongside your files.*
 
 ## Features
 
@@ -25,6 +43,52 @@ Commander Wolf is written in Rust with Ratatui. Its native media engine, **Fox M
 - **Desktop integration:** copy paths and names to the clipboard, reveal entries in the system file manager, open external applications, and run shell commands with captured output.
 
 Windows, Linux, and macOS have native build presets. Graphics output detects terminal capabilities and chooses Kitty, iTerm2, Sixel, true-color half blocks, 256-color half blocks, or ASCII fallback.
+
+## See it in action
+
+All examples use **Catppuccin Mocha + modern** in WezTerm on Windows. Click a
+video cover to open the MP4 with sound; click a screenshot to inspect it at full size.
+
+### Video and audio previews
+
+Start playback with `p` and toggle mute with `m`, without leaving the file manager.
+
+| Video playback with sound · 16 seconds | Audio playback and visualization · 12 seconds |
+|---|---|
+| [![Watch Sintel playing in Commander Wolf with sound](docs/Media/video-poster.png)](docs/Media/video-preview.mp4) | [![Listen to Cipher with a live audio visualizer in Commander Wolf](docs/Media/audio-poster.png)](docs/Media/audio-preview.mp4) |
+| [Watch video](docs/Media/video-preview.mp4) — *Sintel*, Blender Foundation, CC BY 3.0. | [Listen to audio](docs/Media/audio-preview.mp4) — *Cipher*, Kevin MacLeod, CC BY 4.0. |
+
+### Edit a directory like text
+
+Press `i`, edit names or add and remove lines, then press Esc to review the
+planned changes. Apply them together with `y`. This example creates, renames,
+and deletes entries, then shows the result.
+
+![Oil-style directory editing: create, rename, delete, review, and apply](docs/Media/directory-edit.gif)
+
+### Find a name in the current panel
+
+Type `/catalog`, press Enter, and use `n` / `N` to move between matches.
+
+![Local search for catalog, followed by navigation between matching files](docs/Media/local-search.gif)
+
+### Preview documents and source code
+
+Read PDF pages and syntax-highlighted code alongside the directory listing.
+Use `]` / `[` to turn document pages.
+
+| PDF pages and metadata | Syntax-highlighted C++ |
+|---|---|
+| [![Commander Wolf documentation displayed as a PDF preview](docs/Media/pdf-preview.png)](docs/Media/pdf-preview.png) | [![C++ source code with syntax highlighting in the preview panel](docs/Media/code-preview.png)](docs/Media/code-preview.png) |
+
+### Search through subdirectories
+
+Press Space, `f`, `f`, enter a glob such as `*.pdf`, and press Enter to search.
+Preview the selected result before opening it.
+
+[![Recursive file finder showing PDF results and a document preview](docs/Media/finder.png)](docs/Media/finder.png)
+
+[Demonstration media credits and licenses](docs/Media/CREDITS.md).
 
 ## Install and run
 
@@ -103,6 +167,20 @@ The default leader is **Space**. Press the keys in a sequence one after another;
 
 The [user guide](docs/user-guide.md) covers commands, selection rules, conflict handling, cancellation, finder patterns, playback, and all configuration options.
 
+## Themes and styles
+
+Choose colors and presentation independently. These screenshots show the same
+file and preview in three combinations; click a screenshot to view it at full size.
+
+| Catppuccin Mocha · modern | Far · classic | Tokyo Night · nvim |
+|---|---|---|
+| [![Catppuccin Mocha with rounded modern frames and C++ syntax highlighting](docs/Media/theme-catppuccin-modern.png)](docs/Media/theme-catppuccin-modern.png) | [![Far colors with classic double frames, colored file names, and no icons](docs/Media/theme-far-classic.png)](docs/Media/theme-far-classic.png) | [![Tokyo Night with borderless nvim panels and C++ syntax highlighting](docs/Media/theme-tokyonight-nvim.png)](docs/Media/theme-tokyonight-nvim.png) |
+| `:theme catppuccin_mocha`<br>`:style modern` | `:theme far`<br>`:style classic` | `:theme tokyonight_night`<br>`:style nvim` |
+
+Use these commands to try a combination for the current session, or set it in Lua
+as shown below. `modern` uses rounded frames; `classic` uses double panel frames,
+colored file names, and no icons; `nvim` keeps the main panels and footer borderless.
+
 ## Configuration
 
 Configuration is optional and **Lua-only**. Create `init.lua` at:
@@ -155,3 +233,5 @@ Please report problems in [Issues](https://github.com/max-wolf-cpp/commander-wol
 Commander Wolf's original code, including the included Fox Media Term sources and Rust bindings, is licensed under the [MIT License](LICENSE), copyright © 2026 Max Wolf.
 
 Third-party components retain their own licenses. Vendored `nvim-web-devicons` data includes its [original MIT license](Vendor/NvimWebDevicons/LICENSE). See [Third-party notices](THIRD_PARTY_NOTICES.md) for dependency sources and licensing information.
+
+The photographs, film, and music shown in the README retain their own licenses; see [Demonstration media credits](docs/Media/CREDITS.md).

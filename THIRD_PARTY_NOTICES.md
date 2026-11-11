@@ -2,6 +2,12 @@
 
 Commander Wolf's original source code is covered by the root [MIT license](LICENSE). This does not replace the licenses of third-party data or dependencies.
 
+## Demonstration media
+
+README screenshots and clips include third-party photographs, film, and music.
+See [Demonstration media credits](docs/Media/CREDITS.md) for the original sources,
+attribution, licenses, and editing notes. These assets are not relicensed under MIT.
+
 ## Vendored source data
 
 `Vendor/NvimWebDevicons/` contains filename and extension icon tables from [nvim-tree/nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons), at the revision recorded in its [README](Vendor/NvimWebDevicons/README.md). Its original [MIT license and copyright notice](Vendor/NvimWebDevicons/LICENSE) are included unchanged.
