@@ -14,6 +14,8 @@ class Cwolf < Formula
 
   def install
     libexec.install Dir["*"]
+    # Keep Homebrew's automatic metafile installation from moving the payload license.
+    prefix.install_symlink libexec/"LICENSE"
     bin.write_exec_script libexec/"cwolf"
   end
 

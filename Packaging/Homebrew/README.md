@@ -8,7 +8,9 @@ The complete release stays in Homebrew's `libexec` directory, including its
 bundled native libraries, licenses, and checksums. A small executable wrapper in
 `bin` starts the packaged binary. No source build or separately installed FFmpeg
 is required. The formula preserves library load paths and the release's ad-hoc
-signatures; the application is not notarized.
+signatures; the application is not notarized. A license symlink at the formula
+prefix prevents Homebrew's automatic metafile installation from moving the
+original license out of the checksummed payload.
 
 ## Validate in GitHub Actions
 
