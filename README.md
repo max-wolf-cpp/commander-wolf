@@ -22,7 +22,12 @@ A dual-pane terminal file manager with Vim-style navigation, Lua configuration, 
 
 Commander Wolf is written in Rust with Ratatui. Its native media engine, **Fox Media Term**, is a separate C++23 library included in this repository and built automatically by Cargo.
 
-[Build instructions](docs/building.md) · [User guide](docs/user-guide.md) · [Architecture](docs/architecture.md) · [Release builds](docs/releases.md) · [MIT license](LICENSE)
+<p align="center">
+  <a href="docs/building.md"><img src="https://img.shields.io/badge/Build%20instructions-89b4fa?style=for-the-badge" alt="Build instructions"></a>
+  <a href="docs/user-guide.md"><img src="https://img.shields.io/badge/User%20guide-a6e3a1?style=for-the-badge" alt="User guide"></a>
+  <a href="docs/architecture.md"><img src="https://img.shields.io/badge/Architecture-cba6f7?style=for-the-badge" alt="Architecture"></a>
+  <a href="docs/releases.md"><img src="https://img.shields.io/badge/Release%20builds-fab387?style=for-the-badge" alt="Release builds"></a>
+</p>
 
 ![Commander Wolf showing a photograph and file metadata in the preview panel](docs/Media/image-preview.png)
 
@@ -46,17 +51,24 @@ Windows, Linux, and macOS have native build presets. Graphics output detects ter
 
 ## See it in action
 
-All examples use **Catppuccin Mocha + modern** in WezTerm on Windows. Click a
-video cover to open the MP4 with sound; click a screenshot to inspect it at full size.
+All examples use **Catppuccin Mocha + modern** in WezTerm on Windows.
+Play the video clips below with sound; click a screenshot to inspect it at full size.
 
 ### Video and audio previews
 
 Start playback with `p` and toggle mute with `m`, without leaving the file manager.
 
-| Video playback with sound · 16 seconds | Audio playback and visualization · 12 seconds |
-|---|---|
-| [![Watch Sintel playing in Commander Wolf with sound](docs/Media/video-poster.png)](docs/Media/video-preview.mp4) | [![Listen to Cipher with a live audio visualizer in Commander Wolf](docs/Media/audio-poster.png)](docs/Media/audio-preview.mp4) |
-| [Watch video](docs/Media/video-preview.mp4) — *Sintel*, Blender Foundation, CC BY 3.0. | [Listen to audio](docs/Media/audio-preview.mp4) — *Cipher*, Kevin MacLeod, CC BY 4.0. |
+#### Video playback with sound · 16 seconds
+
+https://github.com/user-attachments/assets/eece7d8d-ffe5-4f7a-9408-c3e091aa4afa
+
+*Sintel* — © copyright Blender Foundation | [www.sintel.org](https://www.sintel.org/), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). [Download MP4](docs/Media/video-preview.mp4).
+
+#### Audio playback and visualization · 12 seconds
+
+https://github.com/user-attachments/assets/767f2576-ebea-4461-aad4-f3a09435b97f
+
+*"Cipher"* — Kevin MacLeod ([incompetech.com](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100844)), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). [Download MP4](docs/Media/audio-preview.mp4).
 
 ### Edit a directory like text
 
