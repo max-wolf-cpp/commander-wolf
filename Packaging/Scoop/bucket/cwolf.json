@@ -1,0 +1,27 @@
+{
+    "version": "0.1.0",
+    "description": "A dual-pane terminal file manager with Vim-style navigation, Lua configuration, and rich previews.",
+    "homepage": "https://github.com/max-wolf-cpp/commander-wolf",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/max-wolf-cpp/commander-wolf/releases/download/v0.1.0/commander-wolf-0.1.0-windows-x64.zip",
+            "hash": "87ec05c158181e89aa76d6dfeb5e0d5bdb6d72526c4d1d8a3d4a15cdc0d9e06e",
+            "extract_dir": "commander-wolf-0.1.0-windows-x64"
+        }
+    },
+    "bin": "cwolf.exe",
+    "notes": "Launch cwolf from a terminal. A Nerd Font is recommended for the default icons.",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/max-wolf-cpp/commander-wolf/releases/download/v$version/commander-wolf-$version-windows-x64.zip",
+                "extract_dir": "commander-wolf-$version-windows-x64"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/max-wolf-cpp/commander-wolf/releases/download/v$version/SHA256SUMS.txt"
+        }
+    }
+}

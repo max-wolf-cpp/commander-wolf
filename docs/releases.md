@@ -78,3 +78,9 @@ The final job combines and verifies the three archive checksum files and attache
 [WinGet manifests and local verification](../Packaging/WinGet/README.md) describe
 how to install the published Windows archive through a local portable-package
 manifest and prepare a later submission to the WinGet community repository.
+
+## Scoop distribution
+
+[Scoop manifest and local verification](../Packaging/Scoop/README.md) describe
+how to install the published Windows archive, test it alongside another package
+manager, and prepare a small standalone bucket for distribution.
