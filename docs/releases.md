@@ -72,3 +72,9 @@ After creating an archive, packaging extracts it into a new temporary location, 
 The workflow never publishes a release. It refuses to replace assets of an already published release. A successful rerun may replace files in an existing draft for the same tag/commit; it does not move an existing tag. If the tag does not exist, the draft targets the workflow commit for the release tag. Updating that draft also updates its target commit and notes without moving an existing tag.
 
 The final job combines and verifies the three archive checksum files and attaches the archives plus `SHA256SUMS.txt`. To publish a later version, update the Cargo package version/lockfile as appropriate, commit the changes, and dispatch the matching tag.
+
+## Windows Package Manager
+
+[WinGet manifests and local verification](../Packaging/WinGet/README.md) describe
+how to install the published Windows archive through a local portable-package
+manifest and prepare a later submission to the WinGet community repository.
