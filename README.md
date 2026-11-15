@@ -104,7 +104,23 @@ Preview the selected result before opening it.
 
 ## Install and run
 
+### Scoop (Windows x64)
+
+With [Scoop](https://scoop.sh/) and Git installed:
+
+```powershell
+scoop bucket add max-wolf https://github.com/max-wolf-cpp/scoop-bucket
+scoop install max-wolf/cwolf
+```
+
+This installs the complete release and makes `cwolf` available in the terminal.
+For updates, run `scoop update`, then `scoop update cwolf`.
+
+### Release archives
+
 If you use an archive from [Releases](https://github.com/max-wolf-cpp/commander-wolf/releases), extract the **entire archive** into one folder. Keep the executable and its accompanying shared libraries together. This is currently a multi-file application; copying only `cwolf.exe` is insufficient.
+
+### Run
 
 Run it from a terminal:
 

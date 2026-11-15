@@ -29,23 +29,21 @@ Check navigation, image preview, and audio/video playback. Verify removal with
 commands that could take precedence in the current shell. PowerShell aliases
 also take precedence over the command.
 
-## Publishing a bucket
+## Published bucket
 
-The manifest is ready for a small standalone bucket repository, with this layout:
+The public bucket is [max-wolf-cpp/scoop-bucket](https://github.com/max-wolf-cpp/scoop-bucket).
+Its `bucket/cwolf.json` is the distribution copy of the locally verified manifest.
+Users can install it with:
 
-```text
-bucket/
-  cwolf.json
+```powershell
+scoop bucket add max-wolf https://github.com/max-wolf-cpp/scoop-bucket
+scoop install max-wolf/cwolf
 ```
 
-Keep the package name `cwolf` and retain the manifest filename. Publish the bucket
-only after local installation, playback, and removal have been verified. A bucket
-is a Git repository of manifests; application archives stay in Commander Wolf's
-GitHub Releases. Users add its actual repository URL through `scoop bucket add`
-and can then install `cwolf` by name.
-
-The standalone bucket avoids cloning the application's source and documentation
-just to obtain a package manifest. Official Main bucket submissions have separate
+A bucket is a Git repository of manifests; application archives stay in Commander
+Wolf's GitHub Releases. This small standalone repository avoids cloning the
+application's source and documentation just to obtain a package manifest.
+Official Main bucket submissions have separate
 [eligibility criteria](https://github.com/ScoopInstaller/Scoop/wiki/Criteria-for-including-apps-in-the-main-bucket).
 
 ## Maintaining releases
@@ -58,11 +56,14 @@ checksum-file handling.
 These settings support Scoop's maintainer tooling; they do not create a scheduled
 job or publish manifest updates automatically. Run the appropriate bucket
 `checkver` tooling, inspect and test the updated manifest, then commit and push
-it to the bucket. Users receive that updated manifest with `scoop update`.
+it to the bucket. Keep the project's `Packaging/Scoop/bucket/cwolf.json` and the
+published bucket manifest in sync. Users receive the updated bucket manifest
+with `scoop update`.
 
 For version 0.1.0, the published ZIP and SHA256 were verified while preparing the
 WinGet manifests. The Scoop manifest passed the official JSON Schema check;
 local installation, navigation, media playback, and removal were verified on Windows.
+Installation by name from the public `max-wolf` bucket was also verified.
 Repeat these checks before publishing manifest changes for a new release.
 
 References: [app manifests](https://github.com/ScoopInstaller/Scoop/wiki/App-Manifests),
