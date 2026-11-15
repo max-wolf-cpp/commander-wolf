@@ -1,0 +1,78 @@
+name: Validate Homebrew package
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homebrew-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  HOMEBREW_NO_AUTO_UPDATE: '1'
+  HOMEBREW_NO_INSTALL_CLEANUP: '1'
+  HOMEBREW_NO_ANALYTICS: '1'
+  HOMEBREW_FORMULA: max-wolf-cpp/commander-wolf-ci/cwolf
+
+jobs:
+  validate:
+    if: ${{ github.event.repository.visibility == 'public' }}
+    runs-on: macos-15
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Prepare Homebrew and a temporary local tap
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = arm64
+          python3 -c 'import sys; assert sys.version_info >= (3, 11), sys.version'
+          brew update
+          brew tap-new --no-git max-wolf-cpp/commander-wolf-ci
+          tap_dir="$(brew --repository max-wolf-cpp/commander-wolf-ci)"
+          install -m 0644 Packaging/Homebrew/Formula/cwolf.rb "$tap_dir/Formula/cwolf.rb"
+          brew trust --formula "$HOMEBREW_FORMULA"
+          brew style "$HOMEBREW_FORMULA"
+
+      - name: Install the published release and verify it
+        run: |
+          set -euo pipefail
+          brew install --formula "$HOMEBREW_FORMULA"
+          brew test "$HOMEBREW_FORMULA"
+          python3 Packaging/Homebrew/verify_installation.py "$(brew --prefix "$HOMEBREW_FORMULA")"
+          command -v cwolf
+          test "$(command -v cwolf)" = "$(brew --prefix)/bin/cwolf"
+          test -x "$(command -v cwolf)"
+
+      - name: Verify removal and repeat installation
+        run: |
+          set -euo pipefail
+          formula_prefix="$(brew --prefix "$HOMEBREW_FORMULA")"
+          brew uninstall "$HOMEBREW_FORMULA"
+          test ! -e "$formula_prefix"
+          test ! -e "$(brew --prefix)/bin/cwolf"
+          test ! -L "$(brew --prefix)/bin/cwolf"
+          brew install --formula "$HOMEBREW_FORMULA"
+          brew test "$HOMEBREW_FORMULA"
+          python3 Packaging/Homebrew/verify_installation.py "$(brew --prefix "$HOMEBREW_FORMULA")"
+
+      - name: Summarize verification
+        run: |
+          {
+            echo '## Homebrew package verification'
+            echo
+            echo '- Installed the published macOS ARM64 archive through Homebrew.'
+            echo '- Verified original payload checksums and native library signatures.'
+            echo '- Checked executable-relative dependencies and startup without loader overrides.'
+            echo '- Rendered a fixture directory in a pseudoterminal and quit normally.'
+            echo '- Uninstalled and repeated installation and verification.'
+            echo
+            echo 'CI does not verify real terminal graphics, media playback, notarization, or macOS 14 compatibility.'
+          } >> "$GITHUB_STEP_SUMMARY"

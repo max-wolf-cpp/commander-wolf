@@ -84,3 +84,9 @@ manifest and prepare a later submission to the WinGet community repository.
 [Scoop manifest and local verification](../Packaging/Scoop/README.md) describe
 how to install the published Windows archive, test it alongside another package
 manager, and prepare a small standalone bucket for distribution.
+
+## Homebrew distribution
+
+[Homebrew formula and GitHub Actions verification](../Packaging/Homebrew/README.md)
+describe installation of the published macOS Apple Silicon archive, isolated
+macOS runner checks, and preparation of a standalone tap after validation.
