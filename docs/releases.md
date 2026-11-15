@@ -89,4 +89,4 @@ manager, and prepare a small standalone bucket for distribution.
 
 [Homebrew formula and GitHub Actions verification](../Packaging/Homebrew/README.md)
 describe installation of the published macOS Apple Silicon archive, isolated
-macOS runner checks, and preparation of a standalone tap after validation.
+macOS runner checks, and maintenance of the public Homebrew tap.

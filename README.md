@@ -116,6 +116,23 @@ scoop install max-wolf/cwolf
 This installs the complete release and makes `cwolf` available in the terminal.
 For updates, run `scoop update`, then `scoop update cwolf`.
 
+### Homebrew (macOS Apple Silicon)
+
+With [Homebrew](https://brew.sh/) installed on an Apple Silicon Mac running
+macOS 14 (Sonoma) or newer:
+
+```sh
+brew tap max-wolf-cpp/tap
+brew trust --formula max-wolf-cpp/tap/cwolf
+brew install max-wolf-cpp/tap/cwolf
+```
+
+The [tap](https://github.com/max-wolf-cpp/homebrew-tap) installs the complete
+prebuilt release with its native libraries. The trust command authorizes only
+this formula. The binaries are ad-hoc signed and are not notarized.
+
+For updates, run `brew update`, then `brew upgrade max-wolf-cpp/tap/cwolf`.
+
 ### Release archives
 
 If you use an archive from [Releases](https://github.com/max-wolf-cpp/commander-wolf/releases), extract the **entire archive** into one folder. Keep the executable and its accompanying shared libraries together. This is currently a multi-file application; copying only `cwolf.exe` is insufficient.

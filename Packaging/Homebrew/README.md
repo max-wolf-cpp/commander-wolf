@@ -35,11 +35,11 @@ work in a real terminal. The runner uses macOS 15; it does not test the declared
 macOS 14 minimum. Ad-hoc signing checks do not establish notarization or Gatekeeper
 behavior on a user's Mac.
 
-## Publish a tap after validation
+## Public tap
 
-Keep the formula in a separate public `max-wolf-cpp/homebrew-tap` repository as
-`Formula/cwolf.rb`. That repository must be created and published before
-advertising these installation commands:
+The validated formula is published in
+[`max-wolf-cpp/homebrew-tap`](https://github.com/max-wolf-cpp/homebrew-tap) as
+`Formula/cwolf.rb`. Install it with:
 
 ```sh
 brew tap max-wolf-cpp/tap
